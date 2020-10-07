@@ -18,9 +18,11 @@ namespace Aem_TBL_Patcher
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Aemulus TBL Patcher");
             currentDir = Directory.GetCurrentDirectory();
             CreatePatches();
+            Console.WriteLine("Enter any key to exit...");
+            Console.ReadLine();
         }
 
         private static void CreatePatches()
@@ -71,22 +73,19 @@ namespace Aem_TBL_Patcher
                 string tblTag = GetTblTag(Path.GetFileNameWithoutExtension(tblFile));
                 if (tblTag == null)
                 {
-                    Console.WriteLine("TBL Tag was not found!");
+                    Console.WriteLine("TBL tag was not found!");
                     return;
                 }
 
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine($"{tblTag}: Creating patches...");
-                Console.ResetColor();
                 try
                 {
                     byte[] originalBytes = File.ReadAllBytes(originalTblFile);
                     byte[] moddedBytes = File.ReadAllBytes(tblFile);
 
-                    Console.WriteLine($"Original TBL Size: {originalBytes.Length} bytes\nModded TBL Size: {moddedBytes.Length} bytes");
                     if (originalBytes.Length != moddedBytes.Length)
                     {
-                        Console.WriteLine("Error: File size mismatch!");
+                        ConsoleError($"{Path.GetFileName(tblFile)} (Original): {originalBytes.Length} bytes\n{Path.GetFileName(tblFile)} (Modded): {moddedBytes.Length} bytes");
+                        ConsoleError("Error: File size mismatch!");
                         return;
                     }
 
@@ -120,9 +119,21 @@ namespace Aem_TBL_Patcher
                         }
                     }
 
+                    // skip tbl tags with no patches needed
+                    if (patches.Count < 1)
+                    {
+                        continue;
+                    }
+
+                    StringBuilder tblLogBuilder = new StringBuilder();
+
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"{tblTag}: Creating patches...");
+                    Console.ResetColor();
+
                     foreach (PatchEdit patch in patches)
                     {
-                        Console.WriteLine($"Offset: {patch.Offset.ToString("X")} Length: {patch.BytesEdit.Length}");
+                        tblLogBuilder.AppendLine($"Offset: {patch.Offset.ToString("X")} Length: {patch.BytesEdit.Length}");
 
                         string outputFile = $@"{currentDir}\patches\{tblTag}_{patch.Offset.ToString("X")}.tblpatch";
                         using (FileStream fs = new FileStream(outputFile, FileMode.Create))
@@ -136,6 +147,10 @@ namespace Aem_TBL_Patcher
                         }
                     }
 
+                    string logFilePath = $@"{currentDir}\log_{tblTag}.txt";
+                    File.WriteAllText(logFilePath, tblLogBuilder.ToString());
+                    Console.WriteLine($"{tblTag} Log: {logFilePath}");
+
                     Console.WriteLine($"Total Patches: {patches.Count}");
                 }
                 catch (Exception e)
@@ -143,6 +158,13 @@ namespace Aem_TBL_Patcher
                     Console.WriteLine(e);
                 }
             }
+        }
+
+        private static void ConsoleError(string s)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(s);
+            Console.ResetColor();
         }
 
         private static string GetTblTag(string tblName)
