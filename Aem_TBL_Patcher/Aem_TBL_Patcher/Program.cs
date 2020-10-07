@@ -33,6 +33,10 @@ namespace Aem_TBL_Patcher
             {
                 Directory.CreateDirectory(originalFolderDir);
                 Directory.CreateDirectory(moddedFolderDir);
+                if (Directory.Exists(patchesFolderDir))
+                {
+                    Directory.Delete(patchesFolderDir, true);
+                }
                 Directory.CreateDirectory(patchesFolderDir);
             }
             catch (Exception e)
@@ -53,7 +57,6 @@ namespace Aem_TBL_Patcher
 
             if (modTblFiles == null)
                 return;
-
 
             foreach(string tblFile in modTblFiles)
             {
@@ -106,9 +109,9 @@ namespace Aem_TBL_Patcher
                                 // exit loop once bytes match again
                                 if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
                                 {
-                                    byteIndex = byteEditIndex;
                                     newPatch.BytesEdit = new byte[byteCount];
                                     Array.Copy(moddedBytes, byteIndex, newPatch.BytesEdit, 0, byteCount);
+                                    byteIndex = byteEditIndex - 1;
                                     break;
                                 }
                             }
