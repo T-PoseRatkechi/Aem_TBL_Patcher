@@ -1,2 +1,2 @@
 # Aem_TBL_Patcher
-Quickly converter init_free.bin edits to Aemulus Patches.
+Quickly convert supported TBL edits to Aemulus Patches.
