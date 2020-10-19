@@ -16,6 +16,8 @@ namespace Aem_TBL_Patcher
     {
         private static string currentDir = String.Empty;
 
+        private static EncountPatcher encPatcher = new EncountPatcher();
+
         static void Main(string[] args)
         {
             Console.WriteLine("Aemulus TBL Patcher");
@@ -89,41 +91,50 @@ namespace Aem_TBL_Patcher
                         return;
                     }
 
-                    List<PatchEdit> patches = new List<PatchEdit>();
 
-                    for (long byteIndex = 0, totalBytes = originalBytes.Length; byteIndex < totalBytes; byteIndex++)
+                    List<PatchEdit> patches = null;
+
+                    if (tblTag.Equals("ENC"))
                     {
-                        byte currentOriginalByte = originalBytes[byteIndex];
-                        byte currentModdedByte = moddedBytes[byteIndex];
+                        Console.WriteLine("Using encounter patcher");
+                        patches = encPatcher.GetPatches(originalBytes, moddedBytes);
+                    }
+                    else
+                    {
+                        patches = new List<PatchEdit>();
 
-                        // mismatched bytes indicating edited bytes
-                        if (currentOriginalByte != currentModdedByte)
+                        for (long byteIndex = 0, totalBytes = originalBytes.Length; byteIndex < totalBytes; byteIndex++)
                         {
-                            PatchEdit newPatch = new PatchEdit();
-                            newPatch.Offset = byteIndex;
+                            byte currentOriginalByte = originalBytes[byteIndex];
+                            byte currentModdedByte = moddedBytes[byteIndex];
 
-                            // read ahead for the edited bytes
-                            for (long byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < totalBytes; byteEditIndex++, byteCount++)
+                            // mismatched bytes indicating edited bytes
+                            if (currentOriginalByte != currentModdedByte)
                             {
-                                // exit loop once bytes match again
-                                if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
-                                {
-                                    newPatch.BytesEdit = new byte[byteCount];
-                                    Array.Copy(moddedBytes, byteIndex, newPatch.BytesEdit, 0, byteCount);
-                                    byteIndex = byteEditIndex - 1;
-                                    break;
-                                }
-                            }
+                                PatchEdit newPatch = new PatchEdit();
+                                newPatch.Offset = byteIndex;
 
-                            patches.Add(newPatch);
+                                // read ahead for the edited bytes
+                                for (long byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < totalBytes; byteEditIndex++, byteCount++)
+                                {
+                                    // exit loop once bytes match again
+                                    if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
+                                    {
+                                        newPatch.BytesEdit = new byte[byteCount];
+                                        Array.Copy(moddedBytes, byteIndex, newPatch.BytesEdit, 0, byteCount);
+                                        byteIndex = byteEditIndex - 1;
+                                        break;
+                                    }
+                                }
+
+                                patches.Add(newPatch);
+                            }
                         }
                     }
 
                     // skip tbl tags with no patches needed
                     if (patches.Count < 1)
-                    {
                         continue;
-                    }
 
                     StringBuilder tblLogBuilder = new StringBuilder();
 
@@ -165,6 +176,13 @@ namespace Aem_TBL_Patcher
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(s);
             Console.ResetColor();
+        }
+
+        // given a tbl tag and the current offset, calculates the correct offset the replacement should be
+        private long GetStartOffset(string tblTag, string byteOffset)
+        {
+
+            return -1;
         }
 
         private static string GetTblTag(string tblName)
