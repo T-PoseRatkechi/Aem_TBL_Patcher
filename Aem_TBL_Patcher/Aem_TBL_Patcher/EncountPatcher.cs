@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Aem_TBL_Patcher
 {
-    class EncountPatcher
+    class EncountPatcher : IPatcher
     {
         struct EncounterTBL
         {
@@ -103,7 +103,7 @@ namespace Aem_TBL_Patcher
                 }
             }
 
-            Console.WriteLine($"Encounters Parsed: {encountersParsed}\nTotal Patches Needed:{thePatches.Count}");
+            Console.WriteLine($"ENC - Encounters Parsed: {encountersParsed}, Total Patches: {thePatches.Count}");
 
             return thePatches;
         }

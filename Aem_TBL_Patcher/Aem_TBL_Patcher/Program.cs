@@ -17,6 +17,9 @@ namespace Aem_TBL_Patcher
         private static string currentDir = String.Empty;
 
         private static EncountPatcher encPatcher = new EncountPatcher();
+        private static SkillPatcher sklPatcher = new SkillPatcher();
+        private static UnitPatcher untPatcher = new UnitPatcher();
+        private static PersonaPatcher psaPatcher = new PersonaPatcher();
 
         static void Main(string[] args)
         {
@@ -96,8 +99,23 @@ namespace Aem_TBL_Patcher
 
                     if (tblTag.Equals("ENC"))
                     {
-                        Console.WriteLine("Using encounter patcher");
+                        Console.WriteLine("Using Encounter Patcher");
                         patches = encPatcher.GetPatches(originalBytes, moddedBytes);
+                    }
+                    else if (tblTag.Equals("SKL"))
+                    {
+                        Console.WriteLine("Using Skill Patcher");
+                        patches = sklPatcher.GetPatches(originalBytes, moddedBytes);
+                    }
+                    else if (tblTag.Equals("UNT"))
+                    {
+                        Console.WriteLine("Using Unit Patcher");
+                        patches = untPatcher.GetPatches(originalBytes, moddedBytes);
+                    }
+                    else if (tblTag.Equals("PSA"))
+                    {
+                        Console.WriteLine("Using Persona Patcher");
+                        patches = psaPatcher.GetPatches(originalBytes, moddedBytes);
                     }
                     else
                     {
@@ -176,13 +194,6 @@ namespace Aem_TBL_Patcher
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(s);
             Console.ResetColor();
-        }
-
-        // given a tbl tag and the current offset, calculates the correct offset the replacement should be
-        private long GetStartOffset(string tblTag, string byteOffset)
-        {
-
-            return -1;
         }
 
         private static string GetTblTag(string tblName)
