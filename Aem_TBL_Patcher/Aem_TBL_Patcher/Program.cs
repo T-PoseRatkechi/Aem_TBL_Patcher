@@ -94,9 +94,7 @@ namespace Aem_TBL_Patcher
                         return;
                     }
 
-
-                    List<PatchEdit> patches = null;
-
+                    /*
                     if (tblTag.Equals("ENC"))
                     {
                         Console.WriteLine("Using Encounter Patcher");
@@ -149,6 +147,14 @@ namespace Aem_TBL_Patcher
                             }
                         }
                     }
+                    */
+
+
+                    List<PatchEdit> patches = new List<PatchEdit>();
+
+                    IPatcher tblPatcher = GetPatcher(tblTag);
+                    if (tblPatcher != null)
+                        patches = tblPatcher.GetPatches(originalBytes, moddedBytes);
 
                     // skip tbl tags with no patches needed
                     if (patches.Count < 1)
@@ -187,6 +193,35 @@ namespace Aem_TBL_Patcher
                     Console.WriteLine(e);
                 }
             }
+        }
+
+        private static IPatcher GetPatcher(string tblTag)
+        {
+            IPatcher patcher = null;
+
+            switch (tblTag)
+            {
+                case "ENC":
+                    Console.WriteLine("Using Encount Patcher");
+                    patcher = new EncountPatcher();
+                    break;
+                case "SKL":
+                    Console.WriteLine("Using Skill Patcher");
+                    patcher = new SkillPatcher();
+                    break;
+                case "UNT":
+                    Console.WriteLine("Using Unit Patcher");
+                    patcher = new UnitPatcher();
+                    break;
+                case "PSA":
+                    Console.WriteLine("Using Persona Patcher");
+                    patcher = new PersonaPatcher();
+                    break;
+                default:
+                    break;
+            }
+
+            return patcher;
         }
 
         private static void ConsoleError(string s)
