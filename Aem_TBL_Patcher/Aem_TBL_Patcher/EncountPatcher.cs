@@ -42,13 +42,12 @@ namespace Aem_TBL_Patcher
                 thePatches.Add(new PatchEdit() { Offset = 0, BytesEdit = moddedBytes[0..4] });
 
             int encountersParsed = 0;
+
             // handle parsed chunk
-            for (int currentByte = 4, totalBytes = (int)originalSize; currentByte < totalBytes; )
+            for (int currentByte = 4, totalBytes = (int)moddedSize; currentByte < totalBytes; )
             {
                 encountersParsed++;
 
-                // read encounter bytes
-                //byte[] moddedEncounterBytes = moddedBytes[currentByte..(currentByte + 24)];
                 Encounter originalEncounter = ParseEncounter(originalBytes[currentByte..(currentByte + 24)]);
                 Encounter moddedEncounter = ParseEncounter(moddedBytes[currentByte..(currentByte + 24)]);
 
@@ -73,6 +72,35 @@ namespace Aem_TBL_Patcher
                 if (originalEncounter.Music != moddedEncounter.Music)
                     thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
                 currentByte += sizeof(UInt16);
+            }
+
+            // handle mystery bytes like old method
+            for (long byteIndex = moddedSize + 4, totalBytes = moddedBytes.Length; byteIndex < totalBytes; byteIndex++)
+            {
+                byte currentOriginalByte = originalBytes[byteIndex];
+                byte currentModdedByte = moddedBytes[byteIndex];
+
+                // mismatched bytes indicating edited bytes
+                if (currentOriginalByte != currentModdedByte)
+                {
+                    PatchEdit newPatch = new PatchEdit();
+                    newPatch.Offset = byteIndex;
+
+                    // read ahead for the edited bytes
+                    for (long byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < totalBytes; byteEditIndex++, byteCount++)
+                    {
+                        // exit loop once bytes match again
+                        if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
+                        {
+                            newPatch.BytesEdit = new byte[byteCount];
+                            Array.Copy(moddedBytes, byteIndex, newPatch.BytesEdit, 0, byteCount);
+                            byteIndex = byteEditIndex - 1;
+                            break;
+                        }
+                    }
+
+                    thePatches.Add(newPatch);
+                }
             }
 
             Console.WriteLine($"Encounters Parsed: {encountersParsed}\nTotal Patches Needed:{thePatches.Count}");
