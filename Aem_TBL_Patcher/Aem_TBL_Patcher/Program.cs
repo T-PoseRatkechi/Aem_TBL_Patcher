@@ -89,62 +89,6 @@ namespace Aem_TBL_Patcher
                         return;
                     }
 
-                    /*
-                    if (tblTag.Equals("ENC"))
-                    {
-                        Console.WriteLine("Using Encounter Patcher");
-                        patches = encPatcher.GetPatches(originalBytes, moddedBytes);
-                    }
-                    else if (tblTag.Equals("SKL"))
-                    {
-                        Console.WriteLine("Using Skill Patcher");
-                        patches = sklPatcher.GetPatches(originalBytes, moddedBytes);
-                    }
-                    else if (tblTag.Equals("UNT"))
-                    {
-                        Console.WriteLine("Using Unit Patcher");
-                        patches = untPatcher.GetPatches(originalBytes, moddedBytes);
-                    }
-                    else if (tblTag.Equals("PSA"))
-                    {
-                        Console.WriteLine("Using Persona Patcher");
-                        patches = psaPatcher.GetPatches(originalBytes, moddedBytes);
-                    }
-                    else
-                    {
-                        patches = new List<PatchEdit>();
-
-                        for (long byteIndex = 0, totalBytes = originalBytes.Length; byteIndex < totalBytes; byteIndex++)
-                        {
-                            byte currentOriginalByte = originalBytes[byteIndex];
-                            byte currentModdedByte = moddedBytes[byteIndex];
-
-                            // mismatched bytes indicating edited bytes
-                            if (currentOriginalByte != currentModdedByte)
-                            {
-                                PatchEdit newPatch = new PatchEdit();
-                                newPatch.Offset = byteIndex;
-
-                                // read ahead for the edited bytes
-                                for (long byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < totalBytes; byteEditIndex++, byteCount++)
-                                {
-                                    // exit loop once bytes match again
-                                    if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
-                                    {
-                                        newPatch.BytesEdit = new byte[byteCount];
-                                        Array.Copy(moddedBytes, byteIndex, newPatch.BytesEdit, 0, byteCount);
-                                        byteIndex = byteEditIndex - 1;
-                                        break;
-                                    }
-                                }
-
-                                patches.Add(newPatch);
-                            }
-                        }
-                    }
-                    */
-
-
                     List<PatchEdit> patches = new List<PatchEdit>();
 
                     BasePatcher tblPatcher = GetPatcher(tblTag, originalBytes, moddedBytes);
