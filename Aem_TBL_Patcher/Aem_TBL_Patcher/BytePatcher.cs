@@ -6,9 +6,18 @@ namespace Aem_TBL_Patcher
 {
     class BytePatcher
     {
+        int start = 0;
+        int end = 0;
+
+        public BytePatcher(int startByte, int endByte)
+        {
+            start = startByte;
+            end = endByte;
+        }
+
         public void GenerateBytePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
         {
-            for (long byteIndex = 0, totalBytes = originalBytes.Length; byteIndex < totalBytes; byteIndex++)
+            for (long byteIndex = start, totalBytes = end; byteIndex < totalBytes; byteIndex++)
             {
                 byte currentOriginalByte = originalBytes[byteIndex];
                 byte currentModdedByte = moddedBytes[byteIndex];

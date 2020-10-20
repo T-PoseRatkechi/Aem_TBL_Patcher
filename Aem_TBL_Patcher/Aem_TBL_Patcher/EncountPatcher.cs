@@ -75,33 +75,8 @@ namespace Aem_TBL_Patcher
             }
 
             // handle mystery bytes like old method
-            for (long byteIndex = moddedSize + 4, totalBytes = moddedBytes.Length; byteIndex < totalBytes; byteIndex++)
-            {
-                byte currentOriginalByte = originalBytes[byteIndex];
-                byte currentModdedByte = moddedBytes[byteIndex];
-
-                // mismatched bytes indicating edited bytes
-                if (currentOriginalByte != currentModdedByte)
-                {
-                    PatchEdit newPatch = new PatchEdit();
-                    newPatch.Offset = byteIndex;
-
-                    // read ahead for the edited bytes
-                    for (long byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < totalBytes; byteEditIndex++, byteCount++)
-                    {
-                        // exit loop once bytes match again
-                        if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
-                        {
-                            newPatch.BytesEdit = new byte[byteCount];
-                            Array.Copy(moddedBytes, byteIndex, newPatch.BytesEdit, 0, byteCount);
-                            byteIndex = byteEditIndex - 1;
-                            break;
-                        }
-                    }
-
-                    thePatches.Add(newPatch);
-                }
-            }
+            BytePatcher bytePatcher = new BytePatcher((int)(moddedSize + 4), moddedBytes.Length);
+            bytePatcher.GenerateBytePatches(thePatches, originalBytes, moddedBytes);
 
             Console.WriteLine($"ENC - Encounters Parsed: {encountersParsed}, Total Patches: {thePatches.Count}");
 

@@ -199,6 +199,8 @@ namespace Aem_TBL_Patcher
         {
             IPatcher patcher = null;
 
+            Console.ForegroundColor = ConsoleColor.Cyan;
+
             switch (tblTag)
             {
                 case "ENC":
@@ -226,16 +228,18 @@ namespace Aem_TBL_Patcher
                     patcher = new ModelPatcher();
                     break;
                 case "EFF":
-                    Console.WriteLine("Using Model Patcher");
+                    Console.WriteLine("Using Effect Patcher");
                     patcher = new EffectPatcher();
                     break;
                 case "AIC":
-                    Console.WriteLine("Using Model Patcher");
+                    Console.WriteLine("Using Aicalc Patcher");
                     patcher = new AicalcPatcher();
                     break;
                 default:
                     break;
             }
+
+            Console.ResetColor();
 
             return patcher;
         }

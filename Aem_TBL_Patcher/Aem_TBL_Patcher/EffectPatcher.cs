@@ -10,8 +10,10 @@ namespace Aem_TBL_Patcher
         {
             List<PatchEdit> thePatches = new List<PatchEdit>();
 
-            BytePatcher patcher = new BytePatcher();
+            BytePatcher patcher = new BytePatcher(0, moddedBytes.Length);
             patcher.GenerateBytePatches(thePatches, originalBytes, moddedBytes);
+
+            Console.WriteLine($"EFF - Total Patches: {thePatches.Count}");
 
             return thePatches;
         }
