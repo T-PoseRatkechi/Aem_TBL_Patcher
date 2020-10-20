@@ -16,13 +16,15 @@ namespace Aem_TBL_Patcher
                 new ListPatcher(688, 23, "Skill Names"),
                 new ListPatcher(15056, 21, "Enemy Names"),
                 new ListPatcher(22800, 21, "Persona Names"),
-                new ListPatcher(28192, 1, "Unknown 1"), // Maybe wasteful? Prefer the old method?
             };
 
             foreach (ListPatcher patcher in patchers)
             {
                 patcher.GenerateListPatches(thePatches, originalBytes, moddedBytes);
             }
+
+            BytePatcher bytePatcher = new BytePatcher(28192, moddedBytes.Length);
+            bytePatcher.GenerateBytePatches(thePatches, originalBytes, moddedBytes);
 
             return thePatches;
         }
