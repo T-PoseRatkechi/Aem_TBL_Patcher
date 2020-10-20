@@ -4,18 +4,13 @@ using System.Text;
 
 namespace Aem_TBL_Patcher
 {
-    class ModelPatcher : IPatcher
+    class ModelPatcher : BasePatcher
     {
-        public List<PatchEdit> GetPatches(byte[] originalBytes, byte[] moddedBytes)
+        public ModelPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes) { }
+
+        protected override IPatchGenerator[] Patchers => new IPatchGenerator[]
         {
-            List<PatchEdit> thePatches = new List<PatchEdit>();
-
-            BytePatcher patcher = new BytePatcher(0, moddedBytes.Length);
-            patcher.GenerateBytePatches(thePatches, originalBytes, moddedBytes);
-
-            Console.WriteLine($"Model - Total Patches: {thePatches.Count}");
-
-            return thePatches;
-        }
+            new BytePatches(0, _moddedBytes.Length),
+        };
     }
 }

@@ -4,18 +4,18 @@ using System.Text;
 
 namespace Aem_TBL_Patcher
 {
-    class BytePatcher
+    class BytePatches : IPatchGenerator
     {
         int start = 0;
         int end = 0;
 
-        public BytePatcher(int startByte, int endByte)
+        public BytePatches(int startByte, int endByte)
         {
             start = startByte;
             end = endByte;
         }
 
-        public void GenerateBytePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
+        public void GeneratePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
         {
             for (long byteIndex = start, totalBytes = end; byteIndex < totalBytes; byteIndex++)
             {

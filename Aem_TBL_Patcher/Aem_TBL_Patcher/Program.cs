@@ -16,11 +16,6 @@ namespace Aem_TBL_Patcher
     {
         private static string currentDir = String.Empty;
 
-        private static EncountPatcher encPatcher = new EncountPatcher();
-        private static SkillPatcher sklPatcher = new SkillPatcher();
-        private static UnitPatcher untPatcher = new UnitPatcher();
-        private static PersonaPatcher psaPatcher = new PersonaPatcher();
-
         static void Main(string[] args)
         {
             Console.WriteLine("Aemulus TBL Patcher");
@@ -152,9 +147,9 @@ namespace Aem_TBL_Patcher
 
                     List<PatchEdit> patches = new List<PatchEdit>();
 
-                    IPatcher tblPatcher = GetPatcher(tblTag);
+                    IPatcher tblPatcher = GetPatcher(tblTag, originalBytes, moddedBytes);
                     if (tblPatcher != null)
-                        patches = tblPatcher.GetPatches(originalBytes, moddedBytes);
+                        patches = tblPatcher.GetPatches();
 
                     // skip tbl tags with no patches needed
                     if (patches.Count < 1)
@@ -195,7 +190,7 @@ namespace Aem_TBL_Patcher
             }
         }
 
-        private static IPatcher GetPatcher(string tblTag)
+        private static IPatcher GetPatcher(string tblTag, byte[] original, byte[] modded)
         {
             IPatcher patcher = null;
 
@@ -205,35 +200,35 @@ namespace Aem_TBL_Patcher
             {
                 case "ENC":
                     Console.WriteLine("Using Encount Patcher");
-                    patcher = new EncountPatcher();
+                    patcher = new EncountPatcher(original, modded);
                     break;
                 case "SKL":
                     Console.WriteLine("Using Skill Patcher");
-                    patcher = new SkillPatcher();
+                    patcher = new SkillPatcher(original, modded);
                     break;
                 case "UNT":
                     Console.WriteLine("Using Unit Patcher");
-                    patcher = new UnitPatcher();
+                    patcher = new UnitPatcher(original, modded);
                     break;
                 case "PSA":
                     Console.WriteLine("Using Persona Patcher");
-                    patcher = new PersonaPatcher();
+                    patcher = new PersonaPatcher(original, modded);
                     break;
                 case "MSG":
                     Console.WriteLine("Using Msg Patcher");
-                    patcher = new MsgPatcher();
+                    patcher = new MsgPatcher(original, modded);
                     break;
                 case "MDL":
                     Console.WriteLine("Using Model Patcher");
-                    patcher = new ModelPatcher();
+                    patcher = new ModelPatcher(original, modded);
                     break;
                 case "EFF":
                     Console.WriteLine("Using Effect Patcher");
-                    patcher = new EffectPatcher();
+                    patcher = new EffectPatcher(original, modded);
                     break;
                 case "AIC":
                     Console.WriteLine("Using Aicalc Patcher");
-                    patcher = new AicalcPatcher();
+                    patcher = new AicalcPatcher(original, modded);
                     break;
                 default:
                     break;
@@ -253,27 +248,18 @@ namespace Aem_TBL_Patcher
 
         private static string GetTblTag(string tblName)
         {
-            switch (tblName)
+            return tblName switch
             {
-                case "SKILL":
-                    return "SKL";
-                case "UNIT":
-                    return "UNT";
-                case "MSG":
-                    return "MSG";
-                case "PERSONA":
-                    return "PSA";
-                case "ENCOUNT":
-                    return "ENC";
-                case "EFFECT":
-                    return "EFF";
-                case "MODEL":
-                    return "MDL";
-                case "AICALC":
-                    return "AIC";
-                default:
-                    return null;
-            }
+                "SKILL" => "SKL",
+                "UNIT" => "UNT",
+                "MSG" => "MSG",
+                "PERSONA" => "PSA",
+                "ENCOUNT" => "ENC",
+                "EFFECT" => "EFF",
+                "MODEL" => "MDL",
+                "AICALC" => "AIC",
+                _ => null,
+            };
         }
     }
 }

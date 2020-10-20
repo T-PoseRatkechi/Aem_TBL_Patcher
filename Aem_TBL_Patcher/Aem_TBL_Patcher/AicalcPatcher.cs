@@ -4,18 +4,10 @@ using System.Text;
 
 namespace Aem_TBL_Patcher
 {
-    class AicalcPatcher : IPatcher
+    class AicalcPatcher : BasePatcher
     {
-        public List<PatchEdit> GetPatches(byte[] originalBytes, byte[] moddedBytes)
-        {
-            List<PatchEdit> thePatches = new List<PatchEdit>();
+        public AicalcPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes) { }
 
-            BytePatcher patcher = new BytePatcher(0, moddedBytes.Length);
-            patcher.GenerateBytePatches(thePatches, originalBytes, moddedBytes);
-
-            Console.WriteLine($"AIC - Total Patches: {thePatches.Count}");
-
-            return thePatches;
-        }
+        protected override IPatchGenerator[] Patchers => new IPatchGenerator[] { new BytePatches(0, _moddedBytes.Length) };
     }
 }

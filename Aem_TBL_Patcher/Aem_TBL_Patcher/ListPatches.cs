@@ -5,20 +5,20 @@ using System.Text;
 
 namespace Aem_TBL_Patcher
 {
-    class ListPatcher
+    class ListPatches : IPatchGenerator
     {
         int startByte = 0;
         int size = 0;
         string name = null;
 
-        public ListPatcher(int startOffset, int itemSize, string elementName)
+        public ListPatches(int startOffset, int itemSize, string elementName)
         {
             startByte = startOffset;
             size = itemSize;
             name = elementName;
         }
 
-        public void GenerateListPatches (List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
+        public void GeneratePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
         {
             UInt32 chunkSize = BitConverter.ToUInt32(moddedBytes[startByte..(startByte + 4)]);
 

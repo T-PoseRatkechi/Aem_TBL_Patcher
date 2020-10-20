@@ -4,30 +4,18 @@ using System.Text;
 
 namespace Aem_TBL_Patcher
 {
-    class PersonaPatcher : IPatcher
+    class PersonaPatcher : BasePatcher
     {
-        public List<PatchEdit> GetPatches(byte[] originalBytes, byte[] moddedBytes)
+        public PersonaPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes) { }
+
+        protected override IPatchGenerator[] Patchers => new IPatchGenerator[]
         {
-            List<PatchEdit> thePatches = new List<PatchEdit>();
-
-            ListPatcher[] patchers = new ListPatcher[] 
-            {
-                new ListPatcher(0, 14, "Persona Stats"),
-                new ListPatcher(3600, 70, "Persona Growths"),
-                new ListPatcher(21536, 622, "Party Personas"),
-                new ListPatcher(36480, 392, "Party LV UP Thresholds"),
-                new ListPatcher(40016, 2, "Persona Exist"),
-                new ListPatcher(40464, 4, "Persona Fusion")
-            };
-
-            foreach (ListPatcher patcher in patchers)
-            {
-                patcher.GenerateListPatches(thePatches, originalBytes, moddedBytes);
-            }
-
-            Console.WriteLine($"Total Patches: {thePatches.Count}");
-
-            return thePatches;
-        }
+            new ListPatches(0, 14, "Persona Stats"),
+            new ListPatches(3600, 70, "Persona Growths"),
+            new ListPatches(21536, 622, "Party Personas"),
+            new ListPatches(36480, 392, "Party LV UP Thresholds"),
+            new ListPatches(40016, 2, "Persona Exist"),
+            new ListPatches(40464, 4, "Persona Fusion"),
+        };
     }
 }

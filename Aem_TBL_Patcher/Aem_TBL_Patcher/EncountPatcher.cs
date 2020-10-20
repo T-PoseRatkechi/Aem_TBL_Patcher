@@ -5,8 +5,12 @@ using System.Text;
 
 namespace Aem_TBL_Patcher
 {
-    class EncountPatcher : IPatcher
+    class EncountPatcher : BasePatcher
     {
+        public EncountPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes) { }
+
+        protected override IPatchGenerator[] Patchers => throw new NotImplementedException();
+
         struct EncounterTBL
         {
             public UInt32 Size { get; set; }
@@ -25,21 +29,16 @@ namespace Aem_TBL_Patcher
             public UInt16 Music { get; set; }
         }
 
-        public EncountPatcher()
-        {
-
-        }
-
-        public List<PatchEdit> GetPatches(byte[] originalBytes, byte[] moddedBytes)
+        public override List<PatchEdit> GetPatches()
         {
             List<PatchEdit> thePatches = new List<PatchEdit>();
 
-            uint originalSize = BitConverter.ToUInt32(originalBytes[0..4]);
-            uint moddedSize = BitConverter.ToUInt32(moddedBytes[0..4]);
+            uint originalSize = BitConverter.ToUInt32(_originalBytes[0..4]);
+            uint moddedSize = BitConverter.ToUInt32(_moddedBytes[0..4]);
 
             // handle first 4 bytes
             if (originalSize != moddedSize)
-                thePatches.Add(new PatchEdit() { Offset = 0, BytesEdit = moddedBytes[0..4] });
+                thePatches.Add(new PatchEdit() { Offset = 0, BytesEdit = _moddedBytes[0..4] });
 
             int encountersParsed = 0;
 
@@ -48,35 +47,35 @@ namespace Aem_TBL_Patcher
             {
                 encountersParsed++;
 
-                Encounter originalEncounter = ParseEncounter(originalBytes[currentByte..(currentByte + 24)]);
-                Encounter moddedEncounter = ParseEncounter(moddedBytes[currentByte..(currentByte + 24)]);
+                Encounter originalEncounter = ParseEncounter(_originalBytes[currentByte..(currentByte + 24)]);
+                Encounter moddedEncounter = ParseEncounter(_moddedBytes[currentByte..(currentByte + 24)]);
 
                 if (!originalEncounter.Flags.SequenceEqual(moddedEncounter.Flags))
-                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = moddedBytes[currentByte..(currentByte + originalEncounter.Flags.Length)] });
+                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + originalEncounter.Flags.Length)] });
                 currentByte += originalEncounter.Flags.Length;
                 if (originalEncounter.Field04 != moddedEncounter.Field04)
-                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
+                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
                 currentByte += sizeof(UInt16);
                 if (originalEncounter.Field06 != moddedEncounter.Field06)
-                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
+                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
                 currentByte += sizeof(UInt16);
                 if (!originalEncounter.Units.SequenceEqual(moddedEncounter.Units))
-                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = moddedBytes[currentByte..(currentByte + originalEncounter.Units.Length)] });
+                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + originalEncounter.Units.Length)] });
                 currentByte += originalEncounter.Units.Length;
                 if (originalEncounter.FieldID != moddedEncounter.FieldID)
-                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
+                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
                 currentByte += sizeof(UInt16);
                 if (originalEncounter.RoomID != moddedEncounter.RoomID)
-                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
+                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
                 currentByte += sizeof(UInt16);
                 if (originalEncounter.Music != moddedEncounter.Music)
-                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
+                    thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
                 currentByte += sizeof(UInt16);
             }
 
             // handle mystery bytes like old method
-            BytePatcher bytePatcher = new BytePatcher((int)(moddedSize + 4), moddedBytes.Length);
-            bytePatcher.GenerateBytePatches(thePatches, originalBytes, moddedBytes);
+            BytePatches bytePatcher = new BytePatches((int)(moddedSize + 4), _moddedBytes.Length);
+            bytePatcher.GeneratePatches(thePatches, _originalBytes, _moddedBytes);
 
             Console.WriteLine($"ENC - Encounters Parsed: {encountersParsed}, Total Patches: {thePatches.Count}");
 

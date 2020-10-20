@@ -6,6 +6,6 @@ namespace Aem_TBL_Patcher
 {
     interface IPatcher
     {
-        List<PatchEdit> GetPatches(byte[] originalBytes, byte[] moddedBytes);
+        List<PatchEdit> GetPatches();
     }
 }

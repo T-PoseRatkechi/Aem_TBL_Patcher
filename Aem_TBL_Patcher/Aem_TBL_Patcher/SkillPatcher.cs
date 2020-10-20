@@ -5,27 +5,13 @@ using System.Text;
 
 namespace Aem_TBL_Patcher
 {
-    class SkillPatcher : IPatcher
+    class SkillPatcher : BasePatcher
     {
-        public List<PatchEdit> GetPatches(byte[] originalBytes, byte[] moddedBytes)
-        {
-            List<PatchEdit> thePatches = new List<PatchEdit>();
-            //GetElementPatches(thePatches, originalBytes, moddedBytes);
-            //GetSkillPatches(thePatches, originalBytes, moddedBytes);
-            ListPatcher[] patchers = new ListPatcher[]
-            {
-                new ListPatcher(0, 2, "Elements"),
-                new ListPatcher(1264, 44, "Skills"),
-            };
+        public SkillPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes) { }
 
-            foreach (ListPatcher patcher in patchers)
-            {
-                patcher.GenerateListPatches(thePatches, originalBytes, moddedBytes);
-            }
-
-            Console.WriteLine($"Total Patches: {thePatches.Count}");
-
-            return thePatches;
-        }
+        protected override IPatchGenerator[] Patchers => new IPatchGenerator[] {
+            new ListPatches(0, 2, "Elements"),
+            new ListPatches(1264, 44, "Skills"),
+        };
     }
 }
