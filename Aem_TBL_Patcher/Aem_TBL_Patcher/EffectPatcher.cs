@@ -8,9 +8,6 @@ namespace Aem_TBL_Patcher
     {
         public EffectPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes) { }
 
-        protected override IPatchGenerator[] Patchers => new IPatchGenerator[]
-        {
-            new BytePatches(0, _moddedBytes.Length)
-        };
+        protected override IPatchGenerator[] Patchers => new IPatchGenerator[] { new BytePatches(0, _moddedBytes.Length) };
     }
 }

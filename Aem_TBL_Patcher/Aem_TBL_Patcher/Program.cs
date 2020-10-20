@@ -147,7 +147,7 @@ namespace Aem_TBL_Patcher
 
                     List<PatchEdit> patches = new List<PatchEdit>();
 
-                    IPatcher tblPatcher = GetPatcher(tblTag, originalBytes, moddedBytes);
+                    BasePatcher tblPatcher = GetPatcher(tblTag, originalBytes, moddedBytes);
                     if (tblPatcher != null)
                         patches = tblPatcher.GetPatches();
 
@@ -190,9 +190,9 @@ namespace Aem_TBL_Patcher
             }
         }
 
-        private static IPatcher GetPatcher(string tblTag, byte[] original, byte[] modded)
+        private static BasePatcher GetPatcher(string tblTag, byte[] original, byte[] modded)
         {
-            IPatcher patcher = null;
+            BasePatcher patcher = null;
 
             Console.ForegroundColor = ConsoleColor.Cyan;
 

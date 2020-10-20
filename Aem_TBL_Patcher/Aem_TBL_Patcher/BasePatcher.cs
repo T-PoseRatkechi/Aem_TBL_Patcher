@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Aem_TBL_Patcher
 {
-    abstract class BasePatcher : IPatcher
+    abstract class BasePatcher
     {
         protected byte[] _originalBytes;
         protected byte[] _moddedBytes;
