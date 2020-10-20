@@ -221,6 +221,18 @@ namespace Aem_TBL_Patcher
                     Console.WriteLine("Using Msg Patcher");
                     patcher = new MsgPatcher();
                     break;
+                case "MDL":
+                    Console.WriteLine("Using Model Patcher");
+                    patcher = new ModelPatcher();
+                    break;
+                case "EFF":
+                    Console.WriteLine("Using Model Patcher");
+                    patcher = new EffectPatcher();
+                    break;
+                case "AIC":
+                    Console.WriteLine("Using Model Patcher");
+                    patcher = new AicalcPatcher();
+                    break;
                 default:
                     break;
             }
