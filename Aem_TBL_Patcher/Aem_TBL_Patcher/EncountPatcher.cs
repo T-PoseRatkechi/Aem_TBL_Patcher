@@ -9,7 +9,7 @@ namespace Aem_TBL_Patcher
     {
         public EncountPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes) { }
 
-        protected override IPatchGenerator[] Patchers => throw new NotImplementedException();
+        protected override IPatchGenerator[] Patchers => new IPatchGenerator[] { new BytePatches(22660, _moddedBytes.Length) };
 
         struct EncounterTBL
         {
@@ -72,10 +72,6 @@ namespace Aem_TBL_Patcher
                     thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
                 currentByte += sizeof(UInt16);
             }
-
-            // handle mystery bytes like old method
-            BytePatches bytePatcher = new BytePatches((int)(moddedSize + 4), _moddedBytes.Length);
-            bytePatcher.GeneratePatches(thePatches, _originalBytes, _moddedBytes);
 
             Console.WriteLine($"ENC - Encounters Parsed: {encountersParsed}, Total Patches: {thePatches.Count}");
 
