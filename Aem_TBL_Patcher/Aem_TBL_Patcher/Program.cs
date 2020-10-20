@@ -217,6 +217,10 @@ namespace Aem_TBL_Patcher
                     Console.WriteLine("Using Persona Patcher");
                     patcher = new PersonaPatcher();
                     break;
+                case "MSG":
+                    Console.WriteLine("Using Msg Patcher");
+                    patcher = new MsgPatcher();
+                    break;
                 default:
                     break;
             }
