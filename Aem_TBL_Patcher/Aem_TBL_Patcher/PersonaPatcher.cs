@@ -10,7 +10,8 @@ namespace Aem_TBL_Patcher
         {
             List<PatchEdit> thePatches = new List<PatchEdit>();
 
-            ListPatcher[] patchers = new ListPatcher[] {
+            ListPatcher[] patchers = new ListPatcher[] 
+            {
                 new ListPatcher(0, 14, "Persona Stats"),
                 new ListPatcher(3600, 70, "Persona Growths"),
                 new ListPatcher(21536, 622, "Party Personas"),
