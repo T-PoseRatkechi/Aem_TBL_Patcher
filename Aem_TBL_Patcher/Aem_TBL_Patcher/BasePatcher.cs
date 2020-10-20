@@ -6,6 +6,7 @@ namespace Aem_TBL_Patcher
 {
     abstract class BasePatcher
     {
+        protected List<PatchEdit> _thePatches = new List<PatchEdit>();
         protected byte[] _originalBytes;
         protected byte[] _moddedBytes;
 
@@ -13,20 +14,22 @@ namespace Aem_TBL_Patcher
         {
             _originalBytes = originalBytes;
             _moddedBytes = moddedBytes;
+            LoadPatches();
         }
 
-        public virtual List<PatchEdit> GetPatches()
+        public List<PatchEdit> GetPatches()
         {
-            List<PatchEdit> thePatches = new List<PatchEdit>();
+            return _thePatches;
+        }
 
+        protected virtual void LoadPatches()
+        {
             foreach (IPatchGenerator patcher in Patchers)
             {
-                patcher.GeneratePatches(thePatches, _originalBytes, _moddedBytes);
+                patcher.GeneratePatches(_thePatches, _originalBytes, _moddedBytes);
             }
 
-            Console.WriteLine($"Total Patches: {thePatches.Count}");
-
-            return thePatches;
+            Console.WriteLine($"Total Patches: {_thePatches.Count}");
         }
 
         protected abstract IPatchGenerator[] Patchers { get; }
