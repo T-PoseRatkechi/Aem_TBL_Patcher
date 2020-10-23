@@ -21,8 +21,8 @@ namespace Aem_TBL_Patcher
             Console.WriteLine("Aemulus TBL Patcher");
             currentDir = Directory.GetCurrentDirectory();
             CreatePatches();
-            Console.WriteLine("Enter any key to exit...");
-            Console.ReadLine();
+            //Console.WriteLine("Enter any key to exit...");
+            //Console.ReadLine();
         }
 
         private static void CreatePatches()
