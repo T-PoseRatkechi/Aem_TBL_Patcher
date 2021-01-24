@@ -174,6 +174,10 @@ namespace Aem_TBL_Patcher
                     Console.WriteLine("Using Aicalc Patcher");
                     patcher = new Patchers.P4G.AicalcPatcher(original, modded);
                     break;
+                case "ITEM":
+                    Console.WriteLine("Using P5 Item Patcher");
+                    patcher = new Patchers.P5.ItemPatcher(original, modded);
+                    break;
                 default:
                     break;
             }
@@ -202,6 +206,7 @@ namespace Aem_TBL_Patcher
                 "EFFECT" => "EFF",
                 "MODEL" => "MDL",
                 "AICALC" => "AIC",
+                "ITEM" => "ITEM",
                 _ => null,
             };
         }

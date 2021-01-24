@@ -20,7 +20,17 @@ namespace Aem_TBL_Patcher
 
         public void GeneratePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
         {
-            UInt32 chunkSize = BitConverter.ToUInt32(moddedBytes[startByte..(startByte + 4)]);
+            byte[] chunkSizeBytes = moddedBytes[startByte..(startByte + 4)];
+
+            if (chunkSizeBytes[3] != 0x00)
+            {
+                Console.WriteLine("Using BE");
+                Array.Reverse(chunkSizeBytes);
+            }
+            else
+                Console.WriteLine("Using LE");
+
+            UInt32 chunkSize = BitConverter.ToUInt32(chunkSizeBytes);
 
             int endByte = (int)(startByte + 4 + chunkSize);
 
