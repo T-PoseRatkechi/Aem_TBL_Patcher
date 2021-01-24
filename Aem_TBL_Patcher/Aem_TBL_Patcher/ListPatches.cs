@@ -29,7 +29,6 @@ namespace Aem_TBL_Patcher
 
             for (int currentByte = startByte + 4; currentByte < endByte; currentByte += size)
             {
-                elementsParsed++;
                 byte[] originalElement = originalBytes[currentByte..(currentByte + size)];
                 byte[] moddedElement = moddedBytes[currentByte..(currentByte + size)];
 
@@ -38,6 +37,8 @@ namespace Aem_TBL_Patcher
                     patches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = moddedElement });
                     patchesCount++;
                 }
+
+                elementsParsed++;
             }
 
             Console.WriteLine($"{name} Parsed: {elementsParsed}, Total Patches: {patchesCount}");
