@@ -144,35 +144,35 @@ namespace Aem_TBL_Patcher
             {
                 case "ENC":
                     Console.WriteLine("Using Encount Patcher");
-                    patcher = new EncountPatcher(original, modded);
+                    patcher = new Patchers.P4G.EncountPatcher(original, modded);
                     break;
                 case "SKL":
                     Console.WriteLine("Using Skill Patcher");
-                    patcher = new SkillPatcher(original, modded);
+                    patcher = new Patchers.P4G.SkillPatcher(original, modded);
                     break;
                 case "UNT":
                     Console.WriteLine("Using Unit Patcher");
-                    patcher = new UnitPatcher(original, modded);
+                    patcher = new Patchers.P4G.UnitPatcher(original, modded);
                     break;
                 case "PSA":
                     Console.WriteLine("Using Persona Patcher");
-                    patcher = new PersonaPatcher(original, modded);
+                    patcher = new Patchers.P4G.PersonaPatcher(original, modded);
                     break;
                 case "MSG":
                     Console.WriteLine("Using Msg Patcher");
-                    patcher = new MsgPatcher(original, modded);
+                    patcher = new Patchers.P4G.MsgPatcher(original, modded);
                     break;
                 case "MDL":
                     Console.WriteLine("Using Model Patcher");
-                    patcher = new ModelPatcher(original, modded);
+                    patcher = new Patchers.P4G.ModelPatcher(original, modded);
                     break;
                 case "EFF":
                     Console.WriteLine("Using Effect Patcher");
-                    patcher = new EffectPatcher(original, modded);
+                    patcher = new Patchers.P4G.EffectPatcher(original, modded);
                     break;
                 case "AIC":
                     Console.WriteLine("Using Aicalc Patcher");
-                    patcher = new AicalcPatcher(original, modded);
+                    patcher = new Patchers.P4G.AicalcPatcher(original, modded);
                     break;
                 default:
                     break;
