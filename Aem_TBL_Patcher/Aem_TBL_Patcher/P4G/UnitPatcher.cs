@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Aem_TBL_Patcher
+namespace Aem_TBL_Patcher.Patchers.P4G
 {
     class UnitPatcher : BasePatcher
     {

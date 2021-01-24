@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Aem_TBL_Patcher
+namespace Aem_TBL_Patcher.Patchers.P4G
 {
     class EffectPatcher : BasePatcher
     {
