@@ -10,6 +10,7 @@ namespace Aem_TBL_Patcher
         int startByte = 0;
         int size = 0;
         string name = null;
+        bool isBE = false;
 
         public ListPatches(int startOffset, int itemSize, string elementName)
         {
@@ -18,9 +19,25 @@ namespace Aem_TBL_Patcher
             name = elementName;
         }
 
+        public ListPatches(int startOffset, int itemSize, string elementName, bool be)
+        {
+            startByte = startOffset;
+            size = itemSize;
+            name = elementName;
+            isBE = be;
+        }
+
         public void GeneratePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
         {
-            UInt32 chunkSize = BitConverter.ToUInt32(moddedBytes[startByte..(startByte + 4)]);
+            byte[] chunkSizeBytes = moddedBytes[startByte..(startByte + 4)];
+
+            if (isBE)
+            {
+                Console.WriteLine("Using BE");
+                Array.Reverse(chunkSizeBytes);
+            }
+
+            UInt32 chunkSize = BitConverter.ToUInt32(chunkSizeBytes);
 
             int endByte = (int)(startByte + 4 + chunkSize);
 
