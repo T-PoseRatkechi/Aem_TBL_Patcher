@@ -137,7 +137,7 @@ namespace Aem_TBL_Patcher
                 // generate patches for each modded tbl file
                 foreach (string modTbl in modTblFiles)
                 {
-                    string tblFile = Path.GetFileName(modTbl).ToUpper();
+                    string tblFile = Path.GetFileName(modTbl);
                     string originalTbl = $@"{game.OriginalFolder}\{tblFile}";
 
                     // skip modded tbls with missing original counterpart
