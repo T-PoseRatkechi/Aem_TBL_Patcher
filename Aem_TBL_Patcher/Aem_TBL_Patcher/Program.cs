@@ -70,6 +70,13 @@ namespace Aem_TBL_Patcher
                     { "ITEM", new Patchers.P5.ItemPatcher() },
                     { "ENCOUNT", new Patchers.P5.EncountPatcher() }
                 }
+            },
+            {
+                GameTitle.P3F,
+                new Dictionary<string, BasePatcher>()
+                {
+
+                }
             }
         };
 
@@ -153,6 +160,15 @@ namespace Aem_TBL_Patcher
             try
             {
                 string tblName = Path.GetFileNameWithoutExtension(originalTblPath).ToUpper();
+
+                // check if game has tbl patcher for tbl
+                if (!availablePatchers[game].ContainsKey(tblName))
+                {
+                    Console.WriteLine("No patcher found for tbl!");
+                    Console.ReadLine();
+                    return;
+                }
+
                 BasePatcher tblPatcher = availablePatchers[game][tblName];
 
                 byte[] originalBytes = File.ReadAllBytes(originalTblPath);
