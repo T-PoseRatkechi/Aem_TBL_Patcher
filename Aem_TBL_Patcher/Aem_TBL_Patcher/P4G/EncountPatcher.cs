@@ -8,7 +8,7 @@ namespace Aem_TBL_Patcher.Patchers.P4G
 {
     class EncountPatcher : AutoBasePatcher
     {
-        public EncountPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes, "ENCOUNT", false) { }
+        public EncountPatcher() : base("ENCOUNT", false) { }
 
         protected override Segment[] Segments => new Segment[] {
             new Segment(24, "Encounter")

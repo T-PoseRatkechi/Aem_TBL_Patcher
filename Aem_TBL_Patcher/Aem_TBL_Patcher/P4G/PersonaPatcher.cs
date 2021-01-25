@@ -6,7 +6,7 @@ namespace Aem_TBL_Patcher.Patchers.P4G
 {
     class PersonaPatcher : BasePatcher
     {
-        public PersonaPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes) { }
+        public PersonaPatcher(byte[] originalBytes, byte[] moddedBytes) : base() { }
 
         protected override IPatchGenerator[] Patchers => new IPatchGenerator[]
         {

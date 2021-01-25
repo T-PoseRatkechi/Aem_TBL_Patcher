@@ -10,14 +10,16 @@ namespace Aem_TBL_Patcher
         protected byte[] _originalBytes;
         protected byte[] _moddedBytes;
 
-        public BasePatcher(byte[] originalBytes, byte[] moddedBytes)
+        public BasePatcher()
+        {
+
+        }
+
+        public List<PatchEdit> GetPatches(byte[] originalBytes, byte[] moddedBytes)
         {
             _originalBytes = originalBytes;
             _moddedBytes = moddedBytes;
-        }
 
-        public List<PatchEdit> GetPatches()
-        {
             LoadPatches();
             return _thePatches;
         }

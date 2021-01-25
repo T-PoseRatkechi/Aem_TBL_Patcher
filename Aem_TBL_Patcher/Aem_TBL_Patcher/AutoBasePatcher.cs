@@ -8,7 +8,7 @@ namespace Aem_TBL_Patcher
         readonly private bool _isBigEndian = false;
         readonly private string _tblName = String.Empty;
 
-        public AutoBasePatcher(byte[] originalBytes, byte[] moddedBytes, string tblName, bool isBE) : base(originalBytes, moddedBytes) { _tblName = tblName; _isBigEndian = isBE; }
+        public AutoBasePatcher(string tblName, bool isBE) : base() { _tblName = tblName; _isBigEndian = isBE; }
 
         private IPatchGenerator[] GeneratePatchers()
         {

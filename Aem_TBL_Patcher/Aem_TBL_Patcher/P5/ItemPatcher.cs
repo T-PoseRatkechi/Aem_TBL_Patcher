@@ -7,7 +7,7 @@ namespace Aem_TBL_Patcher.Patchers.P5
 {
     class ItemPatcher : AutoBasePatcher
     {
-        public ItemPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes, "ITEM", true) { }
+        public ItemPatcher() : base("ITEM", true) { }
 
         protected override Segment[] Segments => new Segment[]
         {

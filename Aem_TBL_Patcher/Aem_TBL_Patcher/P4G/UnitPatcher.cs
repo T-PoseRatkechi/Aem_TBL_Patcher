@@ -7,7 +7,7 @@ namespace Aem_TBL_Patcher.Patchers.P4G
 {
     class UnitPatcher : BasePatcher
     {
-        public UnitPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes) { }
+        public UnitPatcher(byte[] originalBytes, byte[] moddedBytes) : base() { }
 
         protected override IPatchGenerator[] Patchers => new IPatchGenerator[] 
         {

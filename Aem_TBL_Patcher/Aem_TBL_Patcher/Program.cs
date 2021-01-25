@@ -58,14 +58,15 @@ namespace Aem_TBL_Patcher
         {
             Console.WriteLine("Aemulus TBL Patcher");
 
-            //currentDir = Directory.GetCurrentDirectory();
+            _currentDir = Directory.GetCurrentDirectory();
 
             if (!SetupGames())
                 return;
 
-            GeneratePatches();
+            //GeneratePatches();
 
-            //CreatePatches();
+            CreatePatches();
+
             //Console.WriteLine("Enter any key to exit...");
             //Console.ReadLine();
         }
@@ -225,7 +226,7 @@ namespace Aem_TBL_Patcher
 
                     // add current tbl patches to patches collection
                     if (tblPatcher != null)
-                        allPatches.AddRange(tblPatcher.GetPatches());
+                        allPatches.AddRange(tblPatcher.GetPatches(originalBytes, moddedBytes));
 
                     // skip tbl tags with no patches needed
                     //if (patches.Count < 1)
@@ -286,6 +287,7 @@ namespace Aem_TBL_Patcher
 
             switch (tblTag)
             {
+                /*
                 case "ENC":
                     Console.WriteLine("Using Encount Patcher");
                     patcher = new Patchers.P4G.EncountPatcher(original, modded);
@@ -318,9 +320,10 @@ namespace Aem_TBL_Patcher
                     Console.WriteLine("Using Aicalc Patcher");
                     patcher = new Patchers.P4G.AicalcPatcher(original, modded);
                     break;
+                */
                 case "ITEM":
                     Console.WriteLine("Using P5 Item Patcher");
-                    patcher = new Patchers.P5.ItemPatcher(original, modded);
+                    patcher = new Patchers.P5.ItemPatcher();
                     break;
                 default:
                     break;

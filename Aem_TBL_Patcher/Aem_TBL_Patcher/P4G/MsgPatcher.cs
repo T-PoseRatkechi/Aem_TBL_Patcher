@@ -6,7 +6,7 @@ namespace Aem_TBL_Patcher.Patchers.P4G
 {
     class MsgPatcher : BasePatcher
     {
-        public MsgPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes) { }
+        public MsgPatcher() : base() { }
 
         protected override IPatchGenerator[] Patchers => new IPatchGenerator[]
         {
