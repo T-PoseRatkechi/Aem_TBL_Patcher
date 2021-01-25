@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 
 namespace Aem_TBL_Patcher
 {
@@ -19,7 +20,7 @@ namespace Aem_TBL_Patcher
         public string tbl { get; set; }
         public int section { get; set; }
         public long offset { get; set; }
-        public byte[] data { get; set; }
+        public string data { get; set; }
     }
 
     class Program
@@ -70,7 +71,10 @@ namespace Aem_TBL_Patcher
             if (modTblFiles == null)
                 return;
 
-            foreach(string tblFile in modTblFiles)
+            // collection of all patches
+            List<PatchEdit> allPatches = new List<PatchEdit>();
+
+            foreach (string tblFile in modTblFiles)
             {
                 string originalTblFile = $@"{originalFolderDir}\{Path.GetFileName(tblFile)}";
 
@@ -99,16 +103,17 @@ namespace Aem_TBL_Patcher
                         return;
                     }
 
-                    List<PatchEdit> patches = new List<PatchEdit>();
-
                     BasePatcher tblPatcher = GetPatcher(tblTag, originalBytes, moddedBytes);
+
+                    // add current tbl patches to patches collection
                     if (tblPatcher != null)
-                        patches = tblPatcher.GetPatches();
+                        allPatches.AddRange(tblPatcher.GetPatches());
 
                     // skip tbl tags with no patches needed
-                    if (patches.Count < 1)
-                        continue;
+                    //if (patches.Count < 1)
+                    //    continue;
 
+                    /*
                     StringBuilder tblLogBuilder = new StringBuilder();
 
                     Console.ForegroundColor = ConsoleColor.Cyan;
@@ -136,6 +141,7 @@ namespace Aem_TBL_Patcher
                     Console.WriteLine($"{tblTag} Log: {logFilePath}");
 
                     Console.WriteLine($"Total Patches: {patches.Count}");
+                    */
                 }
                 catch (Exception e)
                 {
@@ -143,6 +149,15 @@ namespace Aem_TBL_Patcher
                     return;
                 }
             }
+
+            Patch patch = new Patch() { 
+                Version = 1,
+                Patches = allPatches.ToArray(),
+            };
+
+            string outputFile = $@"{currentDir}\patches\Patches.tbp";
+
+            File.WriteAllText(outputFile, JsonSerializer.Serialize(patch, new JsonSerializerOptions() { WriteIndented = true }));
         }
 
         private static BasePatcher GetPatcher(string tblTag, byte[] original, byte[] modded)

@@ -48,7 +48,7 @@ namespace Aem_TBL_Patcher
 
                 if (!originalElement.SequenceEqual(moddedElement))
                 {
-                    patches.Add(new PatchEdit() { offset = currentByte, data = moddedElement });
+                    patches.Add(new PatchEdit() { offset = currentByte, data = ByteArrayToString(moddedElement) });
                     patchesCount++;
                 }
 
@@ -57,5 +57,10 @@ namespace Aem_TBL_Patcher
 
             Console.WriteLine($"{name} Parsed: {elementsParsed}, Total Patches: {patchesCount}");
         }
+        public static string ByteArrayToString(byte[] ba)
+        {
+            return BitConverter.ToString(ba).Replace("-", " ");
+        }
+
     }
 }

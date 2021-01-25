@@ -1,24 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Aem_TBL_Patcher.Segments;
 
 namespace Aem_TBL_Patcher
 {
     abstract class AutoBasePatcher : BasePatcher
     {
-        protected struct Segment
-        {
-            public int entrySize { get; }
-            public string segmentName { get; }
+        readonly private bool _isBigEndian = false;
+        readonly private string _tblName = String.Empty;
 
-            public Segment(int s, string n)
-            {
-                entrySize = s;
-                segmentName = n;
-            }
-        }
-
-        public AutoBasePatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes) { }
+        public AutoBasePatcher(byte[] originalBytes, byte[] moddedBytes, string tblName, bool isBE) : base(originalBytes, moddedBytes) { _tblName = tblName; _isBigEndian = isBE; }
 
         private IPatchGenerator[] GeneratePatchers()
         {
@@ -28,29 +18,48 @@ namespace Aem_TBL_Patcher
             IPatchGenerator[] patchers = new IPatchGenerator[totalSegments];
 
             // generate a ListPatcher for each segment
-            for (int segmentIndex = 0, currentOffset = 0; segmentIndex < totalSegments; segmentIndex++)
+            for (int segmentIndex = 0, original_currentOffset = 0, mod_currentOffset = 0; segmentIndex < totalSegments; segmentIndex++)
             {
                 Segment currentSegment = Segments[segmentIndex];
 
-                // store segment size bytes
-                byte[] segmentSizeBytes = _moddedBytes[currentOffset..(currentOffset + 4)];
+                // store segment size bytes of original and modded
+                byte[] original_SegmentSizeBytes = _originalBytes[original_currentOffset..(original_currentOffset + 4)];
+                byte[] mod_SegmentSizeBytes = _moddedBytes[mod_currentOffset..(mod_currentOffset + 4)];
 
                 // reverse bytes if big endian
-                if (isBigEndian)
-                    Array.Reverse(segmentSizeBytes);
+                if (_isBigEndian)
+                {
+                    Array.Reverse(original_SegmentSizeBytes);
+                    Array.Reverse(mod_SegmentSizeBytes);
+                }
 
-                uint segmentSize = BitConverter.ToUInt32(segmentSizeBytes);
+                uint original_segmentSize = BitConverter.ToUInt32(original_SegmentSizeBytes);
+                uint mod_segmentSize = BitConverter.ToUInt32(mod_SegmentSizeBytes);
 
-                Console.WriteLine($"Segment: {currentSegment.segmentName}, SegmentSize: {segmentSize}, SectionOffset: {currentOffset + 4}");
+                Console.WriteLine($"Segment: {currentSegment.SegmentName}\nSegmentSize (Original): {original_segmentSize}\nSegmentSize (Modded): {mod_segmentSize}\nSectionOffset (Original): {original_currentOffset + 4}\nSectionOffset (Modded): {mod_currentOffset + 4}");
 
-                Console.WriteLine($"EntryPatch Created: Offset: {currentOffset}, ItemSize: {currentSegment.entrySize}\n");
-                patchers[segmentIndex] = new EntryPatches(tblName, currentSegment.segmentName, segmentIndex, currentOffset + 4, segmentSize, currentSegment.entrySize);
+                Console.WriteLine($"EntryPatch Created: Offset: {mod_currentOffset}, ItemSize: {currentSegment.EntrySize}\n");
+                patchers[segmentIndex] = new EntryPatches(new SegmentProps { 
+                    Tbl = _tblName,
+                    Index = segmentIndex,
+                    Name = currentSegment.SegmentName,
+                    EntrySize = currentSegment.EntrySize,
+                    OriginalOffset = original_currentOffset,
+                    ModOffset = mod_currentOffset,
+                    OriginalSize = original_segmentSize,
+                    ModSize = mod_segmentSize,
+                });
 
                 // update current offset
-                currentOffset = (int)(currentOffset + segmentSize + segmentSizeBytes.Length);
+                original_currentOffset = (int)(original_currentOffset + original_segmentSize + 4);
+                mod_currentOffset = (int)(mod_currentOffset + mod_segmentSize + mod_SegmentSizeBytes.Length);
 
-                int padding = currentOffset % 16 == 0 ? 0 : 16 - (currentOffset % 16);
-                currentOffset += padding;
+                // adding padding if needed
+                int original_padding = original_currentOffset % 16 == 0 ? 0 : 16 - (original_currentOffset % 16);
+                int mod_padding = mod_currentOffset % 16 == 0 ? 0 : 16 - (mod_currentOffset % 16);
+
+                original_currentOffset += original_padding;
+                mod_currentOffset += mod_padding;
             }
 
             return patchers;
@@ -62,9 +71,6 @@ namespace Aem_TBL_Patcher
         }
 
         protected override IPatchGenerator[] Patchers => GeneratePatchers();
-
-        protected abstract bool isBigEndian { get; }
-        protected abstract string tblName { get; }
 
         protected abstract Segment[] Segments { get; }
     }

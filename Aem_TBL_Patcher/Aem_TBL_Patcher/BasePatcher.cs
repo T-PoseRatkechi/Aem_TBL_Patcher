@@ -14,11 +14,11 @@ namespace Aem_TBL_Patcher
         {
             _originalBytes = originalBytes;
             _moddedBytes = moddedBytes;
-            LoadPatches();
         }
 
         public List<PatchEdit> GetPatches()
         {
+            LoadPatches();
             return _thePatches;
         }
 
