@@ -38,7 +38,7 @@ namespace Aem_TBL_Patcher.Patchers.P4G
 
             // handle first 4 bytes
             if (originalSize != moddedSize)
-                _thePatches.Add(new PatchEdit() { Offset = 0, BytesEdit = _moddedBytes[0..4] });
+                _thePatches.Add(new PatchEdit() { offset = 0, data = _moddedBytes[0..4] });
 
             int encountersParsed = 0;
 
@@ -51,25 +51,25 @@ namespace Aem_TBL_Patcher.Patchers.P4G
                 Encounter moddedEncounter = ParseEncounter(_moddedBytes[currentByte..(currentByte + 24)]);
 
                 if (!originalEncounter.Flags.SequenceEqual(moddedEncounter.Flags))
-                    _thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + originalEncounter.Flags.Length)] });
+                    _thePatches.Add(new PatchEdit() { offset = currentByte, data = _moddedBytes[currentByte..(currentByte + originalEncounter.Flags.Length)] });
                 currentByte += originalEncounter.Flags.Length;
                 if (originalEncounter.Field04 != moddedEncounter.Field04)
-                    _thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
+                    _thePatches.Add(new PatchEdit() { offset = currentByte, data = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
                 currentByte += sizeof(UInt16);
                 if (originalEncounter.Field06 != moddedEncounter.Field06)
-                    _thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
+                    _thePatches.Add(new PatchEdit() { offset = currentByte, data = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
                 currentByte += sizeof(UInt16);
                 if (!originalEncounter.Units.SequenceEqual(moddedEncounter.Units))
-                    _thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + originalEncounter.Units.Length)] });
+                    _thePatches.Add(new PatchEdit() { offset = currentByte, data = _moddedBytes[currentByte..(currentByte + originalEncounter.Units.Length)] });
                 currentByte += originalEncounter.Units.Length;
                 if (originalEncounter.FieldID != moddedEncounter.FieldID)
-                    _thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
+                    _thePatches.Add(new PatchEdit() { offset = currentByte, data = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
                 currentByte += sizeof(UInt16);
                 if (originalEncounter.RoomID != moddedEncounter.RoomID)
-                    _thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
+                    _thePatches.Add(new PatchEdit() { offset = currentByte, data = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
                 currentByte += sizeof(UInt16);
                 if (originalEncounter.Music != moddedEncounter.Music)
-                    _thePatches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
+                    _thePatches.Add(new PatchEdit() { offset = currentByte, data = _moddedBytes[currentByte..(currentByte + sizeof(UInt16))] });
                 currentByte += sizeof(UInt16);
             }
 

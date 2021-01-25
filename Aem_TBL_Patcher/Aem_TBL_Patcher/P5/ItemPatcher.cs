@@ -8,6 +8,9 @@ namespace Aem_TBL_Patcher.Patchers.P5
     {
         public ItemPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes) { }
 
+        protected override bool isBigEndian => true;
+        protected override string tblName => "SKILL";
+
         protected override Segment[] Segments => new Segment[]
         {
             new Segment(64, "Accessory Item Data"),
@@ -20,7 +23,5 @@ namespace Aem_TBL_Patcher.Patchers.P5
             new Segment(24, "SkillCards Item Data"),
             new Segment(52, "RangedWeapons Item Data"),
         };
-
-        protected override bool isBigEndian => true;
     }
 }

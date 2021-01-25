@@ -48,7 +48,7 @@ namespace Aem_TBL_Patcher
 
                 if (!originalElement.SequenceEqual(moddedElement))
                 {
-                    patches.Add(new PatchEdit() { Offset = currentByte, BytesEdit = moddedElement });
+                    patches.Add(new PatchEdit() { offset = currentByte, data = moddedElement });
                     patchesCount++;
                 }
 

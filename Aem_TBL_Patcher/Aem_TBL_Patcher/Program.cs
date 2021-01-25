@@ -6,10 +6,20 @@ using System.Text;
 
 namespace Aem_TBL_Patcher
 {
-    struct PatchEdit
+
+    public struct Patch
     {
-        public long Offset { get; set; }
-        public byte[] BytesEdit { get; set; }
+        public int Version { get; set; }
+        public PatchEdit[] Patches { get; set; }
+    }
+
+    public struct PatchEdit
+    {
+        public string comment { get; set; }
+        public string tbl { get; set; }
+        public int section { get; set; }
+        public long offset { get; set; }
+        public byte[] data { get; set; }
     }
 
     class Program
@@ -107,16 +117,16 @@ namespace Aem_TBL_Patcher
 
                     foreach (PatchEdit patch in patches)
                     {
-                        tblLogBuilder.AppendLine($"Offset: {patch.Offset.ToString("X")} Length: {patch.BytesEdit.Length}");
+                        tblLogBuilder.AppendLine($"Offset: {patch.offset.ToString("X")} Length: {patch.data.Length}");
 
-                        string outputFile = $@"{currentDir}\patches\{tblTag}_{patch.Offset.ToString("X")}.tblpatch";
+                        string outputFile = $@"{currentDir}\patches\{tblTag}_{patch.offset.ToString("X")}.tblpatch";
                         using (FileStream fs = new FileStream(outputFile, FileMode.Create))
                         {
                             foreach (byte tagByte in Encoding.ASCII.GetBytes(tblTag))
                                 fs.WriteByte(tagByte);
-                            foreach (byte offsetByte in BitConverter.GetBytes(patch.Offset).Reverse())
+                            foreach (byte offsetByte in BitConverter.GetBytes(patch.offset).Reverse())
                                 fs.WriteByte(offsetByte);
-                            foreach (byte editByte in patch.BytesEdit)
+                            foreach (byte editByte in patch.data)
                                 fs.WriteByte(editByte);
                         }
                     }

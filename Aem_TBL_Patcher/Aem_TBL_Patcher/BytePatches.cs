@@ -26,7 +26,7 @@ namespace Aem_TBL_Patcher
                 if (currentOriginalByte != currentModdedByte)
                 {
                     PatchEdit newPatch = new PatchEdit();
-                    newPatch.Offset = byteIndex;
+                    newPatch.offset = byteIndex;
 
                     // read ahead for the edited bytes
                     for (long byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < totalBytes; byteEditIndex++, byteCount++)
@@ -34,8 +34,8 @@ namespace Aem_TBL_Patcher
                         // exit loop once bytes match again
                         if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
                         {
-                            newPatch.BytesEdit = new byte[byteCount];
-                            Array.Copy(moddedBytes, byteIndex, newPatch.BytesEdit, 0, byteCount);
+                            newPatch.data = new byte[byteCount];
+                            Array.Copy(moddedBytes, byteIndex, newPatch.data, 0, byteCount);
                             byteIndex = byteEditIndex - 1;
                             break;
                         }

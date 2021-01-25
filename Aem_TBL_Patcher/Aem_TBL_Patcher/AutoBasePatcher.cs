@@ -39,26 +39,18 @@ namespace Aem_TBL_Patcher
                 if (isBigEndian)
                     Array.Reverse(segmentSizeBytes);
 
-                //Console.WriteLine(ByteArrayToString(segmentSizeBytes));
-
                 uint segmentSize = BitConverter.ToUInt32(segmentSizeBytes);
-                //Console.WriteLine($"Size: {segmentSize}");
-
-                //Console.WriteLine($"Section Offset: {currentOffset + 4}");
 
                 Console.WriteLine($"Segment: {currentSegment.segmentName}, SegmentSize: {segmentSize}, SectionOffset: {currentOffset + 4}");
 
-                Console.WriteLine($"ListPatcher Created: Offset: {currentOffset}, ItemSize: {currentSegment.entrySize}\n");
-                patchers[segmentIndex] = new ListPatches(currentOffset, currentSegment.entrySize, currentSegment.segmentName, isBigEndian);
+                Console.WriteLine($"EntryPatch Created: Offset: {currentOffset}, ItemSize: {currentSegment.entrySize}\n");
+                patchers[segmentIndex] = new EntryPatches(tblName, currentSegment.segmentName, segmentIndex, currentOffset + 4, segmentSize, currentSegment.entrySize);
 
                 // update current offset
                 currentOffset = (int)(currentOffset + segmentSize + segmentSizeBytes.Length);
-                //Console.WriteLine($"Current Offset: {currentOffset}");
 
                 int padding = currentOffset % 16 == 0 ? 0 : 16 - (currentOffset % 16);
                 currentOffset += padding;
-
-                //Console.WriteLine($"Padding: {padding}\n");
             }
 
             return patchers;
@@ -72,6 +64,7 @@ namespace Aem_TBL_Patcher
         protected override IPatchGenerator[] Patchers => GeneratePatchers();
 
         protected abstract bool isBigEndian { get; }
+        protected abstract string tblName { get; }
 
         protected abstract Segment[] Segments { get; }
     }
