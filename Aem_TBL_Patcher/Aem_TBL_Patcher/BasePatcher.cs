@@ -32,7 +32,7 @@ namespace Aem_TBL_Patcher
                 patcher.GeneratePatches(_thePatches, _originalBytes, _moddedBytes);
             }
 
-            Console.WriteLine($"Total Patches: {_thePatches.Count}");
+            Console.WriteLine($"Patches Count: {_thePatches.Count}");
         }
 
         protected abstract IPatchGenerator[] Patchers { get; }

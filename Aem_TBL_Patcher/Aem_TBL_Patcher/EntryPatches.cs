@@ -43,7 +43,7 @@ namespace Aem_TBL_Patcher
                             data = ByteArrayToString(moddedElement),
                         });
 
-                        Console.WriteLine($"Entry Patch\nTBL: {_segmentProps.Tbl}\nSegmentIndex: {_segmentProps.Index}\nOffset: {currentEntry * _segmentProps.EntrySize}\n");
+                        //Console.WriteLine($"Entry Patch\nTBL: {_segmentProps.Tbl}\nSegmentIndex: {_segmentProps.Index}\nOffset: {currentEntry * _segmentProps.EntrySize}\n");
 
                         patchesCount++;
                     }
@@ -61,7 +61,7 @@ namespace Aem_TBL_Patcher
                         data = ByteArrayToString(moddedElement),
                     });
 
-                    Console.WriteLine($"Entry Patch (Extended)\nTBL: {_segmentProps.Tbl}\nSegmentIndex: {_segmentProps.Index}\nOffset: {currentEntry * _segmentProps.EntrySize}\n");
+                    //Console.WriteLine($"Entry Patch (Extended)\nTBL: {_segmentProps.Tbl}\nSegmentIndex: {_segmentProps.Index}\nOffset: {currentEntry * _segmentProps.EntrySize}\n");
 
                     patchesCount++;
                 }

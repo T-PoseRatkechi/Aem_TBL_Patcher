@@ -34,7 +34,7 @@ namespace Aem_TBL_Patcher
 
         readonly private struct GameProps
         {
-            public GameTitle Game { get; }
+            public GameTitle Name { get; }
             public string OriginalFolder { get; }
             public string ModdedFolder { get; }
             public string PatchesFolder { get; }
@@ -43,10 +43,10 @@ namespace Aem_TBL_Patcher
             {
                 string currentDir = Directory.GetCurrentDirectory();
 
-                Game = game;
-                OriginalFolder = $@"{currentDir}\{Game}\original";
-                ModdedFolder = $@"{currentDir}\{Game}\modded";
-                PatchesFolder = $@"{currentDir}\{Game}\patches";
+                Name = game;
+                OriginalFolder = $@"{currentDir}\{Name}\original";
+                ModdedFolder = $@"{currentDir}\{Name}\modded";
+                PatchesFolder = $@"{currentDir}\{Name}\patches";
             }
         }
 
@@ -130,7 +130,9 @@ namespace Aem_TBL_Patcher
                 if (modTblFiles == null)
                     continue;
 
-                Console.WriteLine($"[{game.Game}] Patcher");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($"[{game.Name}] Patcher");
+                Console.ResetColor();
 
                 List<PatchEdit> gameTblPatches = new List<PatchEdit>();
 
@@ -150,7 +152,38 @@ namespace Aem_TBL_Patcher
                     }
 
                     Console.WriteLine($"{tblFile}: Generating patches...");
-                    LoadTblPatches(game.Game, gameTblPatches, originalTbl, modTbl);
+                    LoadTblPatches(game.Name, gameTblPatches, originalTbl, modTbl);
+                }
+
+                if (gameTblPatches.Count < 1)
+                {
+                    Console.WriteLine("No patches generated!");
+                    continue;
+                }
+
+                // output patch file for current game
+                try
+                {
+                    string outputPatchFile = $@"{game.PatchesFolder}\Patches.tbp";
+
+                    // prep patch json
+                    Patch gamePatch = new Patch
+                    {
+                        Version = 1,
+                        Patches = gameTblPatches.ToArray()
+                    };
+
+                    File.WriteAllText(outputPatchFile, JsonSerializer.Serialize(gamePatch, new JsonSerializerOptions { WriteIndented = true }));
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"[{game.Name}] Total Patches: {gameTblPatches.Count}");
+                    Console.WriteLine($"[{game.Name}] Patch file created: {outputPatchFile}");
+                    Console.ResetColor();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    Console.WriteLine("Problem outputting game patch file!");
                 }
             }
         }
@@ -165,7 +198,6 @@ namespace Aem_TBL_Patcher
                 if (!availablePatchers[game].ContainsKey(tblName))
                 {
                     Console.WriteLine("No patcher found for tbl!");
-                    Console.ReadLine();
                     return;
                 }
 
@@ -175,7 +207,6 @@ namespace Aem_TBL_Patcher
                 byte[] moddedBytes = File.ReadAllBytes(moddedTblPath);
 
                 allPatches.AddRange(tblPatcher.GetPatches(originalBytes, moddedBytes));
-                Console.WriteLine(allPatches.Count);
             }
             catch (Exception e)
             {
