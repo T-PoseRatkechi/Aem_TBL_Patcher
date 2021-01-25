@@ -24,7 +24,9 @@ namespace Aem_TBL_Patcher
 
                 // store segment size bytes of original and modded
                 byte[] original_SegmentSizeBytes = _originalBytes[original_currentOffset..(original_currentOffset + 4)];
+                original_currentOffset += 4;
                 byte[] mod_SegmentSizeBytes = _moddedBytes[mod_currentOffset..(mod_currentOffset + 4)];
+                mod_currentOffset += 4;
 
                 // reverse bytes if big endian
                 if (_isBigEndian)
@@ -36,7 +38,7 @@ namespace Aem_TBL_Patcher
                 uint original_segmentSize = BitConverter.ToUInt32(original_SegmentSizeBytes);
                 uint mod_segmentSize = BitConverter.ToUInt32(mod_SegmentSizeBytes);
 
-                Console.WriteLine($"Segment: {currentSegment.SegmentName}\nSegmentSize (Original): {original_segmentSize}\nSegmentSize (Modded): {mod_segmentSize}\nSectionOffset (Original): {original_currentOffset + 4}\nSectionOffset (Modded): {mod_currentOffset + 4}");
+                Console.WriteLine($"Segment: {currentSegment.SegmentName}\nSegmentSize (Original): {original_segmentSize}\nSegmentSize (Modded): {mod_segmentSize}\nSectionOffset (Original): {original_currentOffset}\nSectionOffset (Modded): {mod_currentOffset}");
 
                 Console.WriteLine($"EntryPatch Created: Offset: {mod_currentOffset}, ItemSize: {currentSegment.EntrySize}\n");
                 patchers[segmentIndex] = new EntryPatches(new SegmentProps { 
@@ -51,8 +53,8 @@ namespace Aem_TBL_Patcher
                 });
 
                 // update current offset
-                original_currentOffset = (int)(original_currentOffset + original_segmentSize + 4);
-                mod_currentOffset = (int)(mod_currentOffset + mod_segmentSize + mod_SegmentSizeBytes.Length);
+                original_currentOffset = (int)(original_currentOffset + original_segmentSize);
+                mod_currentOffset = (int)(mod_currentOffset + mod_segmentSize);
 
                 // adding padding if needed
                 int original_padding = original_currentOffset % 16 == 0 ? 0 : 16 - (original_currentOffset % 16);
