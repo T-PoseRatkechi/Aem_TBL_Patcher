@@ -25,27 +25,34 @@ namespace Aem_TBL_Patcher
 
     class Program
     {
+        private enum GameTitle
+        {
+            P4G,
+            P5,
+            P3F
+        }
+
         readonly private struct GameProps
         {
-            public string GameName { get; }
+            public GameTitle Game { get; }
             public string OriginalFolder { get; }
             public string ModdedFolder { get; }
             public string PatchesFolder { get; }
 
-            public GameProps(string name)
+            public GameProps(GameTitle game)
             {
                 string currentDir = Directory.GetCurrentDirectory();
 
-                GameName = name;
-                OriginalFolder = $@"{currentDir}\{name}\original";
-                ModdedFolder = $@"{currentDir}\{name}\modded";
-                PatchesFolder = $@"{currentDir}\{name}\patches";
+                Game = game;
+                OriginalFolder = $@"{currentDir}\{Game}\original";
+                ModdedFolder = $@"{currentDir}\{Game}\modded";
+                PatchesFolder = $@"{currentDir}\{Game}\patches";
             }
         }
 
         private static string _currentDir = String.Empty;
 
-        private static GameProps[] gamesList = { new GameProps("P4G"), new GameProps("P5"), new GameProps("P3F") };
+        private static GameProps[] gamesList = { new GameProps(GameTitle.P4G), new GameProps(GameTitle.P5), new GameProps(GameTitle.P3F) };
 
         static void Main(string[] args)
         {
@@ -96,7 +103,9 @@ namespace Aem_TBL_Patcher
                 if (modTblFiles == null)
                     continue;
 
-                Console.WriteLine($"[{game.GameName}] Patcher");
+                Console.WriteLine($"[{game.Game}] Patcher");
+
+                List<PatchEdit> gameTblPatches = new List<PatchEdit>();
 
                 // generate patches for each modded tbl file
                 foreach (string modTbl in modTblFiles)
@@ -116,6 +125,11 @@ namespace Aem_TBL_Patcher
                     Console.WriteLine($"{tblFile}: Generating patches...");
                 }
             }
+        }
+
+        private static void LoadTblPatches(GameTitle game, List<PatchEdit> allPatches, string originalTbl, string moddedTbl)
+        {
+            // TODO
         }
 
         // return list of tbl files located in folder
