@@ -42,24 +42,49 @@ namespace Aem_TBL_Patcher
         {
             int patchesCount = 0;
 
-            for (int currentEntry = 0, numEntries = (int)(_segmentProps.ModSize / _segmentProps.EntrySize); currentEntry < numEntries; currentEntry++)
+            int original_numEntries = (int)(_segmentProps.OriginalSize / _segmentProps.EntrySize);
+            int mod_numEntries = (int)(_segmentProps.ModSize / _segmentProps.EntrySize);
+
+            for (int currentEntry = 0; currentEntry < mod_numEntries; currentEntry++)
             {
-                int currentOffset = _segmentProps.ModOffset + (currentEntry * _segmentProps.EntrySize);
+                int original_currentOffset = _segmentProps.OriginalOffset + (currentEntry * _segmentProps.EntrySize);
+                int mod_currentOffset = _segmentProps.ModOffset + (currentEntry * _segmentProps.EntrySize);
 
-                byte[] originalElement = originalBytes[currentOffset..(currentOffset + _segmentProps.EntrySize)];
-                byte[] moddedElement = moddedBytes[currentOffset..(currentOffset + _segmentProps.EntrySize)];
-
-                if (!originalElement.SequenceEqual(moddedElement))
+                if (currentEntry < original_numEntries)
                 {
-                    patches.Add(new PatchEdit {
-                        comment = $"Segment: {_segmentProps.Name}, Entry Index: {currentEntry}",
+                    byte[] originalElement = originalBytes[original_currentOffset..(original_currentOffset + _segmentProps.EntrySize)];
+                    byte[] moddedElement = moddedBytes[mod_currentOffset..(mod_currentOffset + _segmentProps.EntrySize)];
+
+                    if (!originalElement.SequenceEqual(moddedElement))
+                    {
+                        patches.Add(new PatchEdit
+                        {
+                            comment = $"Segment: {_segmentProps.Name}, Index: {currentEntry}",
+                            tbl = _segmentProps.Tbl,
+                            section = _segmentProps.Index,
+                            offset = (currentEntry * _segmentProps.EntrySize),
+                            data = ByteArrayToString(moddedElement),
+                        });
+
+                        Console.WriteLine($"Entry Patch\nTBL: {_segmentProps.Tbl}\nSegmentIndex: {_segmentProps.Index}\nOffset: {currentEntry * _segmentProps.EntrySize}\n");
+
+                        patchesCount++;
+                    }
+                }
+                else
+                {
+                    byte[] moddedElement = moddedBytes[mod_currentOffset..(mod_currentOffset + _segmentProps.EntrySize)];
+                    
+                    patches.Add(new PatchEdit
+                    {
+                        comment = $"Segment: {_segmentProps.Name} (Extended), Index: {currentEntry}",
                         tbl = _segmentProps.Tbl,
                         section = _segmentProps.Index,
                         offset = (currentEntry * _segmentProps.EntrySize),
                         data = ByteArrayToString(moddedElement),
                     });
 
-                    Console.WriteLine($"Entry Patch\nTBL: {_segmentProps.Tbl}\nSegmentIndex: {_segmentProps.Index}\nOffset: {currentEntry * _segmentProps.EntrySize}\nData: {ByteArrayToString(moddedElement)}");
+                    Console.WriteLine($"Entry Patch (Extended)\nTBL: {_segmentProps.Tbl}\nSegmentIndex: {_segmentProps.Index}\nOffset: {currentEntry * _segmentProps.EntrySize}\n");
 
                     patchesCount++;
                 }

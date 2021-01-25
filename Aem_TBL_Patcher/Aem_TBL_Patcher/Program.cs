@@ -96,12 +96,14 @@ namespace Aem_TBL_Patcher
                     byte[] originalBytes = File.ReadAllBytes(originalTblFile);
                     byte[] moddedBytes = File.ReadAllBytes(tblFile);
 
+                    /*
                     if (originalBytes.Length != moddedBytes.Length)
                     {
                         ConsoleError($"{Path.GetFileName(tblFile)} (Original): {originalBytes.Length} bytes\n{Path.GetFileName(tblFile)} (Modded): {moddedBytes.Length} bytes");
                         ConsoleError("Error: File size mismatch!");
                         return;
                     }
+                    */
 
                     BasePatcher tblPatcher = GetPatcher(tblTag, originalBytes, moddedBytes);
 
