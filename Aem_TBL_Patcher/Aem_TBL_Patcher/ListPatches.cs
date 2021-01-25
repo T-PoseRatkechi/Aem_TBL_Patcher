@@ -32,10 +32,7 @@ namespace Aem_TBL_Patcher
             byte[] chunkSizeBytes = moddedBytes[startByte..(startByte + 4)];
 
             if (isBE)
-            {
-                Console.WriteLine("Using BE");
                 Array.Reverse(chunkSizeBytes);
-            }
 
             UInt32 chunkSize = BitConverter.ToUInt32(chunkSizeBytes);
 

@@ -130,6 +130,7 @@ namespace Aem_TBL_Patcher
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
+                    return;
                 }
             }
         }
