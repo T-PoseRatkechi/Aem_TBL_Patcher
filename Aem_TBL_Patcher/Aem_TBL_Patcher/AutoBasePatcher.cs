@@ -40,7 +40,7 @@ namespace Aem_TBL_Patcher
 
                 Console.WriteLine($"Segment: {currentSegment.SegmentName}\nSegmentSize (Original): {original_segmentSize}\nSegmentSize (Modded): {mod_segmentSize}\nSectionOffset (Original): {original_currentOffset}\nSectionOffset (Modded): {mod_currentOffset}");
 
-                Console.WriteLine($"EntryPatch Created: Offset: {mod_currentOffset}, ItemSize: {currentSegment.EntrySize}\n");
+                Console.WriteLine($"EntryPatch - Original Offset: {original_currentOffset}, Mod Offset: {mod_currentOffset}, Entry Size: {currentSegment.EntrySize}\n");
                 patchers[segmentIndex] = new EntryPatches(new SegmentProps { 
                     Tbl = _tblName,
                     Index = segmentIndex,

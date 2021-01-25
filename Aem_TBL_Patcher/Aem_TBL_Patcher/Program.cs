@@ -25,22 +25,124 @@ namespace Aem_TBL_Patcher
 
     class Program
     {
-        private static string currentDir = String.Empty;
+        readonly private struct GameProps
+        {
+            public string GameName { get; }
+            public string OriginalFolder { get; }
+            public string ModdedFolder { get; }
+            public string PatchesFolder { get; }
+
+            public GameProps(string name)
+            {
+                string currentDir = Directory.GetCurrentDirectory();
+
+                GameName = name;
+                OriginalFolder = $@"{currentDir}\{name}\original";
+                ModdedFolder = $@"{currentDir}\{name}\modded";
+                PatchesFolder = $@"{currentDir}\{name}\patches";
+            }
+        }
+
+        private static string _currentDir = String.Empty;
+
+        private static GameProps[] gamesList = { new GameProps("P4G"), new GameProps("P5"), new GameProps("P3F") };
 
         static void Main(string[] args)
         {
             Console.WriteLine("Aemulus TBL Patcher");
-            currentDir = Directory.GetCurrentDirectory();
-            CreatePatches();
+
+            //currentDir = Directory.GetCurrentDirectory();
+
+            if (!SetupGames())
+                return;
+
+            GeneratePatches();
+
+            //CreatePatches();
             //Console.WriteLine("Enter any key to exit...");
             //Console.ReadLine();
         }
 
+        private static bool SetupGames()
+        {
+            foreach (GameProps game in gamesList)
+            {
+                try
+                {
+                    Directory.CreateDirectory(game.OriginalFolder);
+                    Directory.CreateDirectory(game.ModdedFolder);
+                    Directory.CreateDirectory(game.PatchesFolder);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e);
+                    Console.WriteLine("Problem creating game folders!");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static void GeneratePatches()
+        {
+            // generate patches for each game
+            foreach (GameProps game in gamesList)
+            {
+                // get list of tbl files from current game's modded folder
+                string[] modTblFiles = GetTblFiles(game.ModdedFolder);
+
+                // skip game if no modded tbls were found
+                if (modTblFiles == null)
+                    continue;
+
+                Console.WriteLine($"[{game.GameName}] Patcher");
+
+                // generate patches for each modded tbl file
+                foreach (string modTbl in modTblFiles)
+                {
+                    string tblFile = Path.GetFileName(modTbl).ToUpper();
+                    string originalTbl = $@"{game.OriginalFolder}\{tblFile}";
+
+                    // skip modded tbls with missing original counterpart
+                    if (!File.Exists(originalTbl))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"Couldn't find original TBL file! Missing TBL: {originalTbl}");
+                        Console.ResetColor();
+                        continue;
+                    }
+
+                    Console.WriteLine($"{tblFile}: Generating patches...");
+                }
+            }
+        }
+
+        // return list of tbl files located in folder
+        private static string[] GetTblFiles(string folder)
+        {
+            try
+            {
+                string[] tblFiles = Directory.GetFiles(folder, "*.tbl", SearchOption.TopDirectoryOnly);
+
+                if (tblFiles.Length > 0)
+                    return tblFiles;
+                else
+                    return null;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine($"Problem getting list of TBL files! Directory: {folder}");
+                return null;
+            }
+        }
+
         private static void CreatePatches()
         {
-            string originalFolderDir = $@"{currentDir}\original";
-            string moddedFolderDir = $@"{currentDir}\modded";
-            string patchesFolderDir = $@"{currentDir}\patches";
+            string originalFolderDir = $@"{_currentDir}\original";
+            string moddedFolderDir = $@"{_currentDir}\modded";
+            string patchesFolderDir = $@"{_currentDir}\patches";
 
             try
             {
@@ -157,7 +259,7 @@ namespace Aem_TBL_Patcher
                 Patches = allPatches.ToArray(),
             };
 
-            string outputFile = $@"{currentDir}\patches\Patches.tbp";
+            string outputFile = $@"{_currentDir}\patches\Patches.tbp";
 
             File.WriteAllText(outputFile, JsonSerializer.Serialize(patch, new JsonSerializerOptions() { WriteIndented = true }));
         }
@@ -213,13 +315,6 @@ namespace Aem_TBL_Patcher
             Console.ResetColor();
 
             return patcher;
-        }
-
-        private static void ConsoleError(string s)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(s);
-            Console.ResetColor();
         }
 
         private static string GetTblTag(string tblName)

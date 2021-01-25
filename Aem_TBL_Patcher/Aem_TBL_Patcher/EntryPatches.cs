@@ -8,29 +8,6 @@ namespace Aem_TBL_Patcher
 {
     class EntryPatches : IPatchGenerator
     {
-        /*
-        readonly string _tblName = String.Empty;
-        readonly string _segmentName = String.Empty;
-        readonly int _segmentIndex = 0;
-        readonly int _originalOffset = 0;
-        readonly int _modOffset = 0;
-        readonly uint _originalSegmentSize = 0;
-        readonly uint _modSegmentSize = 0;
-        readonly int _entrySize = 0;
-
-        public EntryPatches(string tblName, string segmentName, int segmentIndex, int modOffset, uint modSegmentSize, int itemSize)
-        {
-            _tblName = tblName;
-            _segmentName = segmentName;
-            _segmentIndex = segmentIndex;
-            _modOffset = modOffset;
-            _modSegmentSize = modSegmentSize;
-            _modOffset = modOffset;
-            _modSegmentSize = modSegmentSize;
-            _entrySize = itemSize;
-        }
-        */
-
         readonly SegmentProps _segmentProps;
 
         public EntryPatches(SegmentProps segmentProps)
