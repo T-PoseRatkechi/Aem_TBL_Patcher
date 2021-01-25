@@ -54,6 +54,25 @@ namespace Aem_TBL_Patcher
 
         private static GameProps[] gamesList = { new GameProps(GameTitle.P4G), new GameProps(GameTitle.P5), new GameProps(GameTitle.P3F) };
 
+        private static Dictionary<GameTitle, Dictionary<string, BasePatcher>> availablePatchers = new Dictionary<GameTitle, Dictionary<string, BasePatcher>>()
+        {
+            {
+                GameTitle.P4G,
+                new Dictionary<string, BasePatcher>()
+                {
+                    { "ENCOUNT", new Patchers.P4G.EncountPatcher() }
+                }
+            },
+            {
+                GameTitle.P5,
+                new Dictionary<string, BasePatcher>()
+                {
+                    { "ITEM", new Patchers.P5.ItemPatcher() },
+                    { "ENCOUNT", new Patchers.P5.EncountPatcher() }
+                }
+            }
+        };
+
         static void Main(string[] args)
         {
             Console.WriteLine("Aemulus TBL Patcher");
@@ -63,9 +82,9 @@ namespace Aem_TBL_Patcher
             if (!SetupGames())
                 return;
 
-            //GeneratePatches();
+            GeneratePatches();
 
-            CreatePatches();
+            //CreatePatches();
 
             //Console.WriteLine("Enter any key to exit...");
             //Console.ReadLine();
@@ -124,13 +143,29 @@ namespace Aem_TBL_Patcher
                     }
 
                     Console.WriteLine($"{tblFile}: Generating patches...");
+                    LoadTblPatches(game.Game, gameTblPatches, originalTbl, modTbl);
                 }
             }
         }
 
-        private static void LoadTblPatches(GameTitle game, List<PatchEdit> allPatches, string originalTbl, string moddedTbl)
+        private static void LoadTblPatches(GameTitle game, List<PatchEdit> allPatches, string originalTblPath, string moddedTblPath)
         {
-            // TODO
+            try
+            {
+                string tblName = Path.GetFileNameWithoutExtension(originalTblPath).ToUpper();
+                BasePatcher tblPatcher = availablePatchers[game][tblName];
+
+                byte[] originalBytes = File.ReadAllBytes(originalTblPath);
+                byte[] moddedBytes = File.ReadAllBytes(moddedTblPath);
+
+                allPatches.AddRange(tblPatcher.GetPatches(originalBytes, moddedBytes));
+                Console.WriteLine(allPatches.Count);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine("Problem loading TBL patches!");
+            }
         }
 
         // return list of tbl files located in folder

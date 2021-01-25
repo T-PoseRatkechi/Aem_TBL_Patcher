@@ -17,6 +17,7 @@ namespace Aem_TBL_Patcher
 
         public List<PatchEdit> GetPatches(byte[] originalBytes, byte[] moddedBytes)
         {
+            // set tbl byte arrays
             _originalBytes = originalBytes;
             _moddedBytes = moddedBytes;
 
