@@ -94,7 +94,7 @@ namespace Aem_TBL_Patcher
 
             GeneratePatches();
 
-            //Console.WriteLine("Enter any key to exit...");
+            Console.WriteLine("Enter any key to exit...");
             Console.ReadLine();
         }
 
@@ -135,11 +135,11 @@ namespace Aem_TBL_Patcher
                 Console.WriteLine($"[{game.Name}] Patcher");
                 Console.ResetColor();
 
-                List<PatchEdit> gameTblPatches = new List<PatchEdit>();
-
                 // generate patches for each modded tbl file
                 foreach (string modTbl in modTblFiles)
                 {
+                    List<PatchEdit> gameTblPatches = new List<PatchEdit>();
+
                     string tblFile = Path.GetFileName(modTbl);
                     string originalTbl = $@"{game.OriginalFolder}\{tblFile}";
 
@@ -153,37 +153,37 @@ namespace Aem_TBL_Patcher
                     }
 
                     LoadTblPatches(game.GamePatchers, gameTblPatches, originalTbl, modTbl);
-                }
 
-                if (gameTblPatches.Count < 1)
-                {
-                    Console.WriteLine("No patches generated!");
-                    continue;
-                }
-
-                // output patch file for current game
-                try
-                {
-                    string outputPatchFile = $@"{game.PatchesFolder}\Patches.tbp";
-
-                    // prep patch json
-                    Patch gamePatch = new Patch
+                    if (gameTblPatches.Count < 1)
                     {
-                        Version = 1,
-                        Patches = gameTblPatches.ToArray()
-                    };
+                        //Console.WriteLine("No patches generated!");
+                        continue;
+                    }
 
-                    File.WriteAllText(outputPatchFile, JsonSerializer.Serialize(gamePatch, new JsonSerializerOptions { WriteIndented = true }));
+                    // output patch file for current game
+                    try
+                    {
+                        string outputPatchFile = $@"{game.PatchesFolder}\{Path.GetFileNameWithoutExtension(originalTbl)}_Patches.tbp";
 
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"[{game.Name}] Total Patches: {gameTblPatches.Count}");
-                    Console.WriteLine($"[{game.Name}] Patch file created: {outputPatchFile}");
-                    Console.ResetColor();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    Console.WriteLine("Problem outputting game patch file!");
+                        // prep patch json
+                        Patch gamePatch = new Patch
+                        {
+                            Version = 1,
+                            Patches = gameTblPatches.ToArray()
+                        };
+
+                        File.WriteAllText(outputPatchFile, JsonSerializer.Serialize(gamePatch, new JsonSerializerOptions { WriteIndented = true }));
+
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        //Console.WriteLine($"[{game.Name}] Total Patches: {gameTblPatches.Count}");
+                        Console.WriteLine($"[{game.Name}] Patch file created: {outputPatchFile}");
+                        Console.ResetColor();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        Console.WriteLine("Problem outputting game patch file!");
+                    }
                 }
             }
         }
