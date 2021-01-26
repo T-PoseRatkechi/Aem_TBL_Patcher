@@ -66,6 +66,10 @@ namespace Aem_TBL_Patcher
                     patchesCount++;
                 }
             }
+
+            //Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"[{_segmentProps.Name}]\nEntries: {mod_numEntries}, Patches: {patchesCount}");
+            //Console.ResetColor();
         }
 
         public static string ByteArrayToString(byte[] ba)

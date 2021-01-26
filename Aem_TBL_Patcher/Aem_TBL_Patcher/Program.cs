@@ -124,7 +124,7 @@ namespace Aem_TBL_Patcher
                 if (modTblFiles == null)
                     continue;
 
-                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"[{game.Name}] Patcher");
                 Console.ResetColor();
 
@@ -145,7 +145,10 @@ namespace Aem_TBL_Patcher
                         continue;
                     }
 
-                    Console.WriteLine($"{tblFile}: Generating patches...");
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"{tblFile}");
+                    Console.ResetColor();
+
                     LoadTblPatches(game.GamePatchers, gameTblPatches, originalTbl, modTbl);
                 }
 
@@ -187,12 +190,15 @@ namespace Aem_TBL_Patcher
             try
             {
                 string tblName = Path.GetFileNameWithoutExtension(originalTblPath).ToUpper();
+                // find patcher for current tbl
                 int patcherIndex = Array.FindIndex(gamePatchers, (patcher) => patcher._tblName.Equals(tblName));
 
                 // check if game has tbl patcher for tbl
                 if (patcherIndex < 0)
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("No patcher found for TBL!");
+                    Console.ResetColor();
                     return;
                 }
 

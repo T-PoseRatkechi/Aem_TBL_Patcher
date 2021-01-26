@@ -36,7 +36,9 @@ namespace Aem_TBL_Patcher
                 patcher.GeneratePatches(_thePatches, _originalBytes, _moddedBytes);
             }
 
-            Console.WriteLine($"Patches Count: {_thePatches.Count}");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"Patches Created: {_thePatches.Count}\n");
+            Console.ResetColor();
         }
 
         protected abstract IPatchGenerator[] Patchers { get; }
