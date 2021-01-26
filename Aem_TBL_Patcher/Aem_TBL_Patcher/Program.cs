@@ -70,6 +70,7 @@ namespace Aem_TBL_Patcher
                 new Patchers.P5.AicalcPatcher(),
                 new Patchers.P5.ElseAIPatcher(),
                 new Patchers.P5.EncountPatcher(),
+                new Patchers.P5.ExistPatcher(),
                 new Patchers.P5.ItemPatcher(),
                 new Patchers.P5.PersonaPatcher(),
                 new Patchers.P5.PlayerPatcher(),
@@ -80,6 +81,7 @@ namespace Aem_TBL_Patcher
             new GameProps(GameTitle.P3F, new BasePatcher[]
             {
                 new Patchers.P3F.AicalcPatcher(),
+                new Patchers.P3F.AicalcFPatcher(),
                 new Patchers.P3F.EffectPatcher(),
                 new Patchers.P3F.EncountPatcher(),
                 new Patchers.P3F.EncountFPatcher(),
@@ -225,6 +227,10 @@ namespace Aem_TBL_Patcher
                 byte[] moddedBytes = File.ReadAllBytes(moddedTblPath);
 
                 allPatches.AddRange(tblPatcher.GetPatches(originalBytes, moddedBytes));
+            }
+            catch (NotImplementedException e)
+            {
+                Console.WriteLine("Patcher not implemented!");
             }
             catch (Exception e)
             {

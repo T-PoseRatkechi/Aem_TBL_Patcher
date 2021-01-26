@@ -18,6 +18,7 @@ namespace Aem_TBL_Patcher
         public void GeneratePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
         {
             int patchesCount = 0;
+            int patchesCountExtra = 0;
 
             int original_numEntries = (int)(_segmentProps.OriginalSize / _segmentProps.EntrySize);
             int mod_numEntries = (int)(_segmentProps.ModSize / _segmentProps.EntrySize);
@@ -63,12 +64,12 @@ namespace Aem_TBL_Patcher
 
                     //Console.WriteLine($"Entry Patch (Extended)\nTBL: {_segmentProps.Tbl}\nSegmentIndex: {_segmentProps.Index}\nOffset: {currentEntry * _segmentProps.EntrySize}\n");
 
-                    patchesCount++;
+                    patchesCountExtra++;
                 }
             }
 
             //Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"[{_segmentProps.Name}] Entries: {mod_numEntries}, Patches: {patchesCount}");
+            Console.WriteLine($"[{_segmentProps.Name}] Entries: {mod_numEntries}, Total Patches: {patchesCount + patchesCountExtra}, Extended Patches: {patchesCountExtra}");
             //Console.ResetColor();
         }
 
