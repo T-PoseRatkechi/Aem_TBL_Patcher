@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Aem_TBL_Patcher.Segments;
 
 namespace Aem_TBL_Patcher.Patchers.P4G
 {
-    class PersonaPatcher : BasePatcher
+    class PersonaPatcher : AutoBasePatcher
     {
         public PersonaPatcher() : base("PERSONA", false) { }
 
-        protected override IPatchGenerator[] Patchers => new IPatchGenerator[]
+        protected override Segment[] Segments => new Segment[]
         {
-            new ListPatches(0, 14, "Persona Stats"),
-            new ListPatches(3600, 70, "Persona Growths"),
-            new ListPatches(21536, 622, "Party Personas"),
-            new ListPatches(36480, 392, "Party LV UP Thresholds"),
-            new ListPatches(40016, 2, "Persona Exist"),
-            new ListPatches(40464, 4, "Persona Fusion"),
+            new Segment(14, "Persona Stats"),
+            new Segment(70, "Persona Growths"),
+            new Segment(622, "Party Personas"),
+            new Segment(392, "Party LV UP Thresholds"),
+            new Segment(2, "Persona Exist"),
+            new Segment(4, "Persona Fusion"),
         };
     }
 }

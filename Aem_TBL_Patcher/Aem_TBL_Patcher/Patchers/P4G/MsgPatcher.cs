@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Aem_TBL_Patcher.Segments;
 
 namespace Aem_TBL_Patcher.Patchers.P4G
 {
-    class MsgPatcher : BasePatcher
+    class MsgPatcher : AutoBasePatcher
     {
         public MsgPatcher() : base("MSG", false) { }
 
-        protected override IPatchGenerator[] Patchers => new IPatchGenerator[]
+        protected override Segment[] Segments => new Segment[]
         {
-            new ListPatches(0, 21, "Arcana Names"),
-            new ListPatches(688, 23, "Skill Names"),
-            new ListPatches(15056, 21, "Enemy Names"),
-            new ListPatches(22800, 21, "Persona Names"),
+            new Segment(21, "Arcana Names"),
+            new Segment(23, "Skill Names"),
+            new Segment(21, "Enemy Names"),
+            new Segment(21, "Persona Names"),
         };
     }
 }

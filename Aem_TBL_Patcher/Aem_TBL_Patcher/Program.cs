@@ -56,7 +56,14 @@ namespace Aem_TBL_Patcher
         {
             new GameProps(GameTitle.P4G, new BasePatcher[]
             {
-                new Patchers.P4G.EncountPatcher()
+                new Patchers.P4G.AicalcPatcher(),
+                new Patchers.P4G.EffectPatcher(),
+                new Patchers.P4G.EncountPatcher(),
+                new Patchers.P4G.ModelPatcher(),
+                new Patchers.P4G.MsgPatcher(),
+                new Patchers.P4G.PersonaPatcher(),
+                new Patchers.P4G.SkillPatcher(),
+                new Patchers.P4G.UnitPatcher()
             }),
             new GameProps(GameTitle.P5, new BasePatcher[]
             {
@@ -68,7 +75,6 @@ namespace Aem_TBL_Patcher
                 new Patchers.P5.SkillPatcher(),
                 new Patchers.P5.UnitPatcher(),
                 new Patchers.P5.VisualPatcher(),
-
             }),
             new GameProps(GameTitle.P3F, new BasePatcher[]
             {
