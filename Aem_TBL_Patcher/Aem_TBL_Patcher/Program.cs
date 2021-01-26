@@ -135,6 +135,10 @@ namespace Aem_TBL_Patcher
                 Console.WriteLine($"[{game.Name}] Patcher");
                 Console.ResetColor();
 
+                // clear game patches folder
+                if (!EmptyFolder(game.PatchesFolder))
+                    return;
+
                 // generate patches for each modded tbl file
                 foreach (string modTbl in modTblFiles)
                 {
@@ -154,11 +158,9 @@ namespace Aem_TBL_Patcher
 
                     LoadTblPatches(game.GamePatchers, gameTblPatches, originalTbl, modTbl);
 
+                    // skip tbl patches if not patches generated
                     if (gameTblPatches.Count < 1)
-                    {
-                        //Console.WriteLine("No patches generated!");
                         continue;
-                    }
 
                     // output patch file for current game
                     try
@@ -183,6 +185,7 @@ namespace Aem_TBL_Patcher
                     {
                         Console.WriteLine(e);
                         Console.WriteLine("Problem outputting game patch file!");
+                        return;
                     }
                 }
             }
@@ -236,6 +239,23 @@ namespace Aem_TBL_Patcher
                 Console.WriteLine(e);
                 Console.WriteLine($"Problem getting list of TBL files! Directory: {folder}");
                 return null;
+            }
+        }
+
+        private static bool EmptyFolder(string folder)
+        {
+            try
+            {
+                string[] files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
+                foreach (string file in files)
+                    File.Delete(file);
+                return true;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine($"Problem clearing folder! Folder: {folder}");
+                return false;
             }
         }
     }
