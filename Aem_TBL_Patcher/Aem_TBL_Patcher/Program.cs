@@ -228,7 +228,7 @@ namespace Aem_TBL_Patcher
 
                 allPatches.AddRange(tblPatcher.GetPatches(originalBytes, moddedBytes));
             }
-            catch (NotImplementedException e)
+            catch (NotImplementedException)
             {
                 Console.WriteLine("Patcher not implemented!");
             }
