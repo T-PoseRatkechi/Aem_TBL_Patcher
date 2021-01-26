@@ -72,9 +72,10 @@ namespace Aem_TBL_Patcher
                 new Patchers.P5.EncountPatcher(),
                 new Patchers.P5.ItemPatcher(),
                 new Patchers.P5.PersonaPatcher(),
+                new Patchers.P5.PlayerPatcher(),
                 new Patchers.P5.SkillPatcher(),
                 new Patchers.P5.UnitPatcher(),
-                new Patchers.P5.VisualPatcher(),
+                new Patchers.P5.VisualPatcher()
             }),
             new GameProps(GameTitle.P3F, new BasePatcher[]
             {
