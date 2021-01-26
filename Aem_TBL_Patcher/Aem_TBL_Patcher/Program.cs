@@ -94,7 +94,7 @@ namespace Aem_TBL_Patcher
             GeneratePatches();
 
             //Console.WriteLine("Enter any key to exit...");
-            //Console.ReadLine();
+            Console.ReadLine();
         }
 
         private static bool SetupGames()
@@ -151,10 +151,6 @@ namespace Aem_TBL_Patcher
                         continue;
                     }
 
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine($"{tblFile}");
-                    Console.ResetColor();
-
                     LoadTblPatches(game.GamePatchers, gameTblPatches, originalTbl, modTbl);
                 }
 
@@ -203,7 +199,7 @@ namespace Aem_TBL_Patcher
                 if (patcherIndex < 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("No patcher found for TBL!");
+                    Console.WriteLine($"{tblName}: No patcher found for TBL!");
                     Console.ResetColor();
                     return;
                 }

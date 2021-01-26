@@ -37,7 +37,7 @@ namespace Aem_TBL_Patcher
             }
 
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"Patches Created: {_thePatches.Count}\n");
+            Console.WriteLine($"Patches Created: {_thePatches.Count}");
             Console.ResetColor();
         }
 

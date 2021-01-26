@@ -7,7 +7,7 @@ namespace Aem_TBL_Patcher.Patchers.P5
 {
     class ElseAIPatcher : AutoBasePatcher
     {
-        public ElseAIPatcher() : base("ELSEAI", true) { }
+        public ElseAIPatcher() : base("ELSAI", true) { }
 
         protected override Segment[] Segments => new Segment[]
         {

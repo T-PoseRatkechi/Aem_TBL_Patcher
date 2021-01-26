@@ -68,7 +68,7 @@ namespace Aem_TBL_Patcher
             }
 
             //Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine($"[{_segmentProps.Name}]\nEntries: {mod_numEntries}, Patches: {patchesCount}");
+            Console.WriteLine($"[{_segmentProps.Name}] Entries: {mod_numEntries}, Patches: {patchesCount}");
             //Console.ResetColor();
         }
 

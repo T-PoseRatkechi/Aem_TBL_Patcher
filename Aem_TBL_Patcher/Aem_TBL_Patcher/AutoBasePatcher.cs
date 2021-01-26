@@ -12,6 +12,10 @@ namespace Aem_TBL_Patcher
 
         private IPatchGenerator[] GeneratePatchers()
         {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"{_tblName}");
+            Console.ResetColor();
+
             int totalSegments = Segments.Length;
 
             // create array of patchers
