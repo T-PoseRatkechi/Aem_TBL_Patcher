@@ -79,7 +79,18 @@ namespace Aem_TBL_Patcher
             }),
             new GameProps(GameTitle.P3F, new BasePatcher[]
             {
-
+                new Patchers.P3F.AicalcPatcher(),
+                new Patchers.P3F.EffectPatcher(),
+                new Patchers.P3F.EncountPatcher(),
+                new Patchers.P3F.EncountFPatcher(),
+                new Patchers.P3F.ModelPatcher(),
+                new Patchers.P3F.MsgPatcher(),
+                new Patchers.P3F.PersonaPatcher(),
+                new Patchers.P3F.PersonaFPatcher(),
+                new Patchers.P3F.SkillPatcher(),
+                new Patchers.P3F.SkillFPatcher(),
+                new Patchers.P3F.UnitPatcher(),
+                new Patchers.P3F.UnitFPatcher()
             })
         };
 
