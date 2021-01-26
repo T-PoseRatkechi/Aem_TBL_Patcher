@@ -10,9 +10,13 @@ namespace Aem_TBL_Patcher
         protected byte[] _originalBytes;
         protected byte[] _moddedBytes;
 
-        public BasePatcher()
-        {
+        readonly public string _tblName = null;
+        readonly protected bool _isBigEndian = false;
 
+        public BasePatcher(string tblName, bool isBigEndian)
+        {
+            _tblName = tblName;
+            _isBigEndian = isBigEndian;
         }
 
         public List<PatchEdit> GetPatches(byte[] originalBytes, byte[] moddedBytes)

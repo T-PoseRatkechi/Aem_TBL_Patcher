@@ -7,7 +7,7 @@ namespace Aem_TBL_Patcher.Patchers.P4G
 {
     class SkillPatcher : BasePatcher
     {
-        public SkillPatcher() : base() { }
+        public SkillPatcher() : base("SKILL", false) { }
 
         protected override IPatchGenerator[] Patchers => new IPatchGenerator[] {
             new ListPatches(0, 2, "Elements"),

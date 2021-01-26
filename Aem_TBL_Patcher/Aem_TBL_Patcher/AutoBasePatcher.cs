@@ -5,10 +5,10 @@ namespace Aem_TBL_Patcher
 {
     abstract class AutoBasePatcher : BasePatcher
     {
-        readonly private bool _isBigEndian = false;
-        readonly private string _tblName = String.Empty;
+        //readonly private bool _isBigEndian = false;
+        //readonly private string _tblName = String.Empty;
 
-        public AutoBasePatcher(string tblName, bool isBE) : base() { _tblName = tblName; _isBigEndian = isBE; }
+        public AutoBasePatcher(string tblName, bool isBigEndian) : base(tblName, isBigEndian) { }
 
         private IPatchGenerator[] GeneratePatchers()
         {

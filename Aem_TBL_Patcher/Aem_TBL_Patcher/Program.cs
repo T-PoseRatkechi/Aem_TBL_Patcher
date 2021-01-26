@@ -38,8 +38,9 @@ namespace Aem_TBL_Patcher
             public string OriginalFolder { get; }
             public string ModdedFolder { get; }
             public string PatchesFolder { get; }
+            public BasePatcher[] GamePatchers { get; }
 
-            public GameProps(GameTitle game)
+            public GameProps(GameTitle game, BasePatcher[] patchers)
             {
                 string currentDir = Directory.GetCurrentDirectory();
 
@@ -47,44 +48,39 @@ namespace Aem_TBL_Patcher
                 OriginalFolder = $@"{currentDir}\{Name}\original";
                 ModdedFolder = $@"{currentDir}\{Name}\modded";
                 PatchesFolder = $@"{currentDir}\{Name}\patches";
+                GamePatchers = patchers;
             }
         }
 
-        private static string _currentDir = String.Empty;
-
-        private static GameProps[] gamesList = { new GameProps(GameTitle.P4G), new GameProps(GameTitle.P5), new GameProps(GameTitle.P3F) };
-
-        private static Dictionary<GameTitle, Dictionary<string, BasePatcher>> availablePatchers = new Dictionary<GameTitle, Dictionary<string, BasePatcher>>()
+        private static GameProps[] gamesList =
         {
+            new GameProps(GameTitle.P4G, new BasePatcher[]
             {
-                GameTitle.P4G,
-                new Dictionary<string, BasePatcher>()
-                {
-                    { "ENCOUNT", new Patchers.P4G.EncountPatcher() }
-                }
-            },
+                new Patchers.P4G.EncountPatcher()
+            }),
+            new GameProps(GameTitle.P5, new BasePatcher[]
             {
-                GameTitle.P5,
-                new Dictionary<string, BasePatcher>()
-                {
-                    { "ITEM", new Patchers.P5.ItemPatcher() },
-                    { "ENCOUNT", new Patchers.P5.EncountPatcher() }
-                }
-            },
-            {
-                GameTitle.P3F,
-                new Dictionary<string, BasePatcher>()
-                {
+                new Patchers.P5.AicalcPatcher(),
+                new Patchers.P5.ElseAIPatcher(),
+                new Patchers.P5.EncountPatcher(),
+                new Patchers.P5.ItemPatcher(),
+                new Patchers.P5.PersonaPatcher(),
+                new Patchers.P5.SkillPatcher(),
+                new Patchers.P5.UnitPatcher(),
+                new Patchers.P5.VisualPatcher(),
 
-                }
-            }
+            }),
+            new GameProps(GameTitle.P3F, new BasePatcher[]
+            {
+
+            })
         };
 
         static void Main(string[] args)
         {
             Console.WriteLine("Aemulus TBL Patcher");
 
-            _currentDir = Directory.GetCurrentDirectory();
+            //_currentDir = Directory.GetCurrentDirectory();
 
             if (!SetupGames())
                 return;
@@ -150,7 +146,7 @@ namespace Aem_TBL_Patcher
                     }
 
                     Console.WriteLine($"{tblFile}: Generating patches...");
-                    LoadTblPatches(game.Name, gameTblPatches, originalTbl, modTbl);
+                    LoadTblPatches(game.GamePatchers, gameTblPatches, originalTbl, modTbl);
                 }
 
                 if (gameTblPatches.Count < 1)
@@ -186,20 +182,21 @@ namespace Aem_TBL_Patcher
             }
         }
 
-        private static void LoadTblPatches(GameTitle game, List<PatchEdit> allPatches, string originalTblPath, string moddedTblPath)
+        private static void LoadTblPatches(BasePatcher[] gamePatchers, List<PatchEdit> allPatches, string originalTblPath, string moddedTblPath)
         {
             try
             {
                 string tblName = Path.GetFileNameWithoutExtension(originalTblPath).ToUpper();
+                int patcherIndex = Array.FindIndex(gamePatchers, (patcher) => patcher._tblName.Equals(tblName));
 
                 // check if game has tbl patcher for tbl
-                if (!availablePatchers[game].ContainsKey(tblName))
+                if (patcherIndex < 0)
                 {
                     Console.WriteLine("No patcher found for TBL!");
                     return;
                 }
 
-                BasePatcher tblPatcher = availablePatchers[game][tblName];
+                BasePatcher tblPatcher = gamePatchers[patcherIndex];
 
                 byte[] originalBytes = File.ReadAllBytes(originalTblPath);
                 byte[] moddedBytes = File.ReadAllBytes(moddedTblPath);

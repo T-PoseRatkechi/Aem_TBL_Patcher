@@ -6,7 +6,7 @@ namespace Aem_TBL_Patcher.Patchers.P4G
 {
     class MsgPatcher : BasePatcher
     {
-        public MsgPatcher() : base() { }
+        public MsgPatcher() : base("MSG", false) { }
 
         protected override IPatchGenerator[] Patchers => new IPatchGenerator[]
         {
