@@ -26,19 +26,5 @@ namespace Aem_TBL_Patcher.Segments
         public int ModOffset { get; set; }
         public uint OriginalSize { get; set; }
         public uint ModSize { get; set; }
-
-        /*
-        public SegmentProps(string tbl, string name, int index, int originalOffset, int modOffset, uint originalSize, uint modSize, int entrySize)
-        {
-            Tbl = tbl;
-            Name = name;
-            Index = index;
-            OriginalOffset = originalOffset;
-            ModOffset = modOffset;
-            OriginalSize = originalSize;
-            ModSize = modSize;
-            EntrySize = entrySize;
-        }
-        */
     }
 }

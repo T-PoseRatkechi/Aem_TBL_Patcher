@@ -25,42 +25,90 @@ namespace Aem_TBL_Patcher
 
     class Program
     {
+        private enum GameTitle
+        {
+            P4G,
+            P5,
+            P3F
+        }
+
         readonly private struct GameProps
         {
-            public string GameName { get; }
+            public GameTitle Name { get; }
             public string OriginalFolder { get; }
             public string ModdedFolder { get; }
             public string PatchesFolder { get; }
+            public BasePatcher[] GamePatchers { get; }
 
-            public GameProps(string name)
+            public GameProps(GameTitle game, BasePatcher[] patchers)
             {
                 string currentDir = Directory.GetCurrentDirectory();
 
-                GameName = name;
-                OriginalFolder = $@"{currentDir}\{name}\original";
-                ModdedFolder = $@"{currentDir}\{name}\modded";
-                PatchesFolder = $@"{currentDir}\{name}\patches";
+                Name = game;
+                OriginalFolder = $@"{currentDir}\{Name}\original";
+                ModdedFolder = $@"{currentDir}\{Name}\modded";
+                PatchesFolder = $@"{currentDir}\{Name}\patches";
+                GamePatchers = patchers;
             }
         }
 
-        private static string _currentDir = String.Empty;
-
-        private static GameProps[] gamesList = { new GameProps("P4G"), new GameProps("P5"), new GameProps("P3F") };
+        private static GameProps[] gamesList =
+        {
+            new GameProps(GameTitle.P4G, new BasePatcher[]
+            {
+                new Patchers.P4G.AicalcPatcher(),
+                new Patchers.P4G.EffectPatcher(),
+                new Patchers.P4G.EncountPatcher(),
+                new Patchers.P4G.ModelPatcher(),
+                new Patchers.P4G.MsgPatcher(),
+                new Patchers.P4G.PersonaPatcher(),
+                new Patchers.P4G.SkillPatcher(),
+                new Patchers.P4G.UnitPatcher()
+            }),
+            new GameProps(GameTitle.P5, new BasePatcher[]
+            {
+                new Patchers.P5.AicalcPatcher(),
+                new Patchers.P5.ElseAIPatcher(),
+                new Patchers.P5.EncountPatcher(),
+                new Patchers.P5.ExistPatcher(),
+                new Patchers.P5.ItemPatcher(),
+                new Patchers.P5.PersonaPatcher(),
+                new Patchers.P5.PlayerPatcher(),
+                new Patchers.P5.SkillPatcher(),
+                new Patchers.P5.UnitPatcher(),
+                new Patchers.P5.VisualPatcher()
+            }),
+            new GameProps(GameTitle.P3F, new BasePatcher[]
+            {
+                new Patchers.P3F.AicalcPatcher(),
+                new Patchers.P3F.AicalcFPatcher(),
+                new Patchers.P3F.EffectPatcher(),
+                new Patchers.P3F.EncountPatcher(),
+                new Patchers.P3F.EncountFPatcher(),
+                new Patchers.P3F.ModelPatcher(),
+                new Patchers.P3F.MsgPatcher(),
+                new Patchers.P3F.PersonaPatcher(),
+                new Patchers.P3F.PersonaFPatcher(),
+                new Patchers.P3F.SkillPatcher(),
+                new Patchers.P3F.SkillFPatcher(),
+                new Patchers.P3F.UnitPatcher(),
+                new Patchers.P3F.UnitFPatcher()
+            })
+        };
 
         static void Main(string[] args)
         {
             Console.WriteLine("Aemulus TBL Patcher");
 
-            //currentDir = Directory.GetCurrentDirectory();
+            //_currentDir = Directory.GetCurrentDirectory();
 
             if (!SetupGames())
                 return;
 
             GeneratePatches();
 
-            //CreatePatches();
-            //Console.WriteLine("Enter any key to exit...");
-            //Console.ReadLine();
+            Console.WriteLine("Enter any key to exit...");
+            Console.ReadLine();
         }
 
         private static bool SetupGames()
@@ -96,12 +144,20 @@ namespace Aem_TBL_Patcher
                 if (modTblFiles == null)
                     continue;
 
-                Console.WriteLine($"[{game.GameName}] Patcher");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"[{game.Name}] Patcher");
+                Console.ResetColor();
+
+                // clear game patches folder
+                if (!EmptyFolder(game.PatchesFolder))
+                    return;
 
                 // generate patches for each modded tbl file
                 foreach (string modTbl in modTblFiles)
                 {
-                    string tblFile = Path.GetFileName(modTbl).ToUpper();
+                    List<PatchEdit> gameTblPatches = new List<PatchEdit>();
+
+                    string tblFile = Path.GetFileName(modTbl);
                     string originalTbl = $@"{game.OriginalFolder}\{tblFile}";
 
                     // skip modded tbls with missing original counterpart
@@ -113,8 +169,73 @@ namespace Aem_TBL_Patcher
                         continue;
                     }
 
-                    Console.WriteLine($"{tblFile}: Generating patches...");
+                    LoadTblPatches(game.GamePatchers, gameTblPatches, originalTbl, modTbl);
+
+                    // skip tbl patches if not patches generated
+                    if (gameTblPatches.Count < 1)
+                        continue;
+
+                    // output patch file for current game
+                    try
+                    {
+                        string outputPatchFile = $@"{game.PatchesFolder}\{Path.GetFileNameWithoutExtension(originalTbl)}_Patches.tbp";
+
+                        // prep patch json
+                        Patch gamePatch = new Patch
+                        {
+                            Version = 1,
+                            Patches = gameTblPatches.ToArray()
+                        };
+
+                        File.WriteAllText(outputPatchFile, JsonSerializer.Serialize(gamePatch, new JsonSerializerOptions { WriteIndented = true }));
+
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        //Console.WriteLine($"[{game.Name}] Total Patches: {gameTblPatches.Count}");
+                        Console.WriteLine($"[{game.Name}] Patch file created: {outputPatchFile}");
+                        Console.ResetColor();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        Console.WriteLine("Problem outputting game patch file!");
+                        return;
+                    }
                 }
+            }
+        }
+
+        private static void LoadTblPatches(BasePatcher[] gamePatchers, List<PatchEdit> allPatches, string originalTblPath, string moddedTblPath)
+        {
+            try
+            {
+                string tblName = Path.GetFileNameWithoutExtension(originalTblPath).ToUpper();
+                // find patcher for current tbl
+                int patcherIndex = Array.FindIndex(gamePatchers, (patcher) => patcher._tblName.Equals(tblName));
+
+                // check if game has tbl patcher for tbl
+                if (patcherIndex < 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"{tblName}: No patcher found for TBL!");
+                    Console.ResetColor();
+                    return;
+                }
+
+                BasePatcher tblPatcher = gamePatchers[patcherIndex];
+
+                byte[] originalBytes = File.ReadAllBytes(originalTblPath);
+                byte[] moddedBytes = File.ReadAllBytes(moddedTblPath);
+
+                allPatches.AddRange(tblPatcher.GetPatches(originalBytes, moddedBytes));
+            }
+            catch (NotImplementedException)
+            {
+                Console.WriteLine("Patcher not implemented!");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine("Problem loading TBL patches!");
             }
         }
 
@@ -138,200 +259,21 @@ namespace Aem_TBL_Patcher
             }
         }
 
-        private static void CreatePatches()
+        private static bool EmptyFolder(string folder)
         {
-            string originalFolderDir = $@"{_currentDir}\original";
-            string moddedFolderDir = $@"{_currentDir}\modded";
-            string patchesFolderDir = $@"{_currentDir}\patches";
-
             try
             {
-                Directory.CreateDirectory(originalFolderDir);
-                Directory.CreateDirectory(moddedFolderDir);
-                if (Directory.Exists(patchesFolderDir))
-                {
-                    Directory.Delete(patchesFolderDir, true);
-                }
-                Directory.CreateDirectory(patchesFolderDir);
+                string[] files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
+                foreach (string file in files)
+                    File.Delete(file);
+                return true;
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 Console.WriteLine(e);
+                Console.WriteLine($"Problem clearing folder! Folder: {folder}");
+                return false;
             }
-
-            string[] modTblFiles = null;
-
-            try
-            {
-                modTblFiles = Directory.GetFiles(moddedFolderDir, "*.tbl", SearchOption.TopDirectoryOnly);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-
-            if (modTblFiles == null)
-                return;
-
-            // collection of all patches
-            List<PatchEdit> allPatches = new List<PatchEdit>();
-
-            foreach (string tblFile in modTblFiles)
-            {
-                string originalTblFile = $@"{originalFolderDir}\{Path.GetFileName(tblFile)}";
-
-                if (!File.Exists(originalTblFile))
-                {
-                    Console.WriteLine($"Error: Missing Original TBL File: {Path.GetFileName(tblFile)}");
-                    continue;
-                }
-
-                string tblTag = GetTblTag(Path.GetFileNameWithoutExtension(tblFile));
-                if (tblTag == null)
-                {
-                    Console.WriteLine("TBL tag was not found!");
-                    return;
-                }
-
-                try
-                {
-                    byte[] originalBytes = File.ReadAllBytes(originalTblFile);
-                    byte[] moddedBytes = File.ReadAllBytes(tblFile);
-
-                    /*
-                    if (originalBytes.Length != moddedBytes.Length)
-                    {
-                        ConsoleError($"{Path.GetFileName(tblFile)} (Original): {originalBytes.Length} bytes\n{Path.GetFileName(tblFile)} (Modded): {moddedBytes.Length} bytes");
-                        ConsoleError("Error: File size mismatch!");
-                        return;
-                    }
-                    */
-
-                    BasePatcher tblPatcher = GetPatcher(tblTag, originalBytes, moddedBytes);
-
-                    // add current tbl patches to patches collection
-                    if (tblPatcher != null)
-                        allPatches.AddRange(tblPatcher.GetPatches());
-
-                    // skip tbl tags with no patches needed
-                    //if (patches.Count < 1)
-                    //    continue;
-
-                    /*
-                    StringBuilder tblLogBuilder = new StringBuilder();
-
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine($"{tblTag}: Creating patches...");
-                    Console.ResetColor();
-
-                    foreach (PatchEdit patch in patches)
-                    {
-                        tblLogBuilder.AppendLine($"Offset: {patch.offset.ToString("X")} Length: {patch.data.Length}");
-
-                        string outputFile = $@"{currentDir}\patches\{tblTag}_{patch.offset.ToString("X")}.tblpatch";
-                        using (FileStream fs = new FileStream(outputFile, FileMode.Create))
-                        {
-                            foreach (byte tagByte in Encoding.ASCII.GetBytes(tblTag))
-                                fs.WriteByte(tagByte);
-                            foreach (byte offsetByte in BitConverter.GetBytes(patch.offset).Reverse())
-                                fs.WriteByte(offsetByte);
-                            foreach (byte editByte in patch.data)
-                                fs.WriteByte(editByte);
-                        }
-                    }
-
-                    string logFilePath = $@"{currentDir}\log_{tblTag}.txt";
-                    File.WriteAllText(logFilePath, tblLogBuilder.ToString());
-                    Console.WriteLine($"{tblTag} Log: {logFilePath}");
-
-                    Console.WriteLine($"Total Patches: {patches.Count}");
-                    */
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    return;
-                }
-            }
-
-            Patch patch = new Patch() { 
-                Version = 1,
-                Patches = allPatches.ToArray(),
-            };
-
-            string outputFile = $@"{_currentDir}\patches\Patches.tbp";
-
-            File.WriteAllText(outputFile, JsonSerializer.Serialize(patch, new JsonSerializerOptions() { WriteIndented = true }));
-        }
-
-        private static BasePatcher GetPatcher(string tblTag, byte[] original, byte[] modded)
-        {
-            BasePatcher patcher = null;
-
-            Console.ForegroundColor = ConsoleColor.Cyan;
-
-            switch (tblTag)
-            {
-                case "ENC":
-                    Console.WriteLine("Using Encount Patcher");
-                    patcher = new Patchers.P4G.EncountPatcher(original, modded);
-                    break;
-                case "SKL":
-                    Console.WriteLine("Using Skill Patcher");
-                    patcher = new Patchers.P4G.SkillPatcher(original, modded);
-                    break;
-                case "UNT":
-                    Console.WriteLine("Using Unit Patcher");
-                    patcher = new Patchers.P4G.UnitPatcher(original, modded);
-                    break;
-                case "PSA":
-                    Console.WriteLine("Using Persona Patcher");
-                    patcher = new Patchers.P4G.PersonaPatcher(original, modded);
-                    break;
-                case "MSG":
-                    Console.WriteLine("Using Msg Patcher");
-                    patcher = new Patchers.P4G.MsgPatcher(original, modded);
-                    break;
-                case "MDL":
-                    Console.WriteLine("Using Model Patcher");
-                    patcher = new Patchers.P4G.ModelPatcher(original, modded);
-                    break;
-                case "EFF":
-                    Console.WriteLine("Using Effect Patcher");
-                    patcher = new Patchers.P4G.EffectPatcher(original, modded);
-                    break;
-                case "AIC":
-                    Console.WriteLine("Using Aicalc Patcher");
-                    patcher = new Patchers.P4G.AicalcPatcher(original, modded);
-                    break;
-                case "ITEM":
-                    Console.WriteLine("Using P5 Item Patcher");
-                    patcher = new Patchers.P5.ItemPatcher(original, modded);
-                    break;
-                default:
-                    break;
-            }
-
-            Console.ResetColor();
-
-            return patcher;
-        }
-
-        private static string GetTblTag(string tblName)
-        {
-            return tblName switch
-            {
-                "SKILL" => "SKL",
-                "UNIT" => "UNT",
-                "MSG" => "MSG",
-                "PERSONA" => "PSA",
-                "ENCOUNT" => "ENC",
-                "EFFECT" => "EFF",
-                "MODEL" => "MDL",
-                "AICALC" => "AIC",
-                "ITEM" => "ITEM",
-                _ => null,
-            };
         }
     }
 }

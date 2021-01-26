@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Aem_TBL_Patcher.Patchers.P4G
 {
-    class EffectPatcher : BasePatcher
+    class ModelPatcher : BasePatcher
     {
-        public EffectPatcher(byte[] originalBytes, byte[] moddedBytes) : base(originalBytes, moddedBytes) { }
+        public ModelPatcher() : base("MODEL", false) { }
 
         protected override IPatchGenerator[] Patchers => new IPatchGenerator[] { new BytePatches(0, _moddedBytes.Length) };
     }

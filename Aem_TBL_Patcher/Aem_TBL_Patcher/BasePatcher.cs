@@ -10,14 +10,21 @@ namespace Aem_TBL_Patcher
         protected byte[] _originalBytes;
         protected byte[] _moddedBytes;
 
-        public BasePatcher(byte[] originalBytes, byte[] moddedBytes)
+        readonly public string _tblName = null;
+        readonly protected bool _isBigEndian = false;
+
+        public BasePatcher(string tblName, bool isBigEndian)
         {
-            _originalBytes = originalBytes;
-            _moddedBytes = moddedBytes;
+            _tblName = tblName;
+            _isBigEndian = isBigEndian;
         }
 
-        public List<PatchEdit> GetPatches()
+        public List<PatchEdit> GetPatches(byte[] originalBytes, byte[] moddedBytes)
         {
+            // set tbl byte arrays
+            _originalBytes = originalBytes;
+            _moddedBytes = moddedBytes;
+
             LoadPatches();
             return _thePatches;
         }
@@ -29,7 +36,9 @@ namespace Aem_TBL_Patcher
                 patcher.GeneratePatches(_thePatches, _originalBytes, _moddedBytes);
             }
 
-            Console.WriteLine($"Total Patches: {_thePatches.Count}");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"Patches Created: {_thePatches.Count}");
+            Console.ResetColor();
         }
 
         protected abstract IPatchGenerator[] Patchers { get; }
