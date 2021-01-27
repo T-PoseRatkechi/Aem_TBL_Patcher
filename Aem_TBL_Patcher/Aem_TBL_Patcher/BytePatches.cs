@@ -38,7 +38,7 @@ namespace Aem_TBL_Patcher
                         {
                             byte[] tempData = new byte[byteCount];
                             Array.Copy(moddedBytes, byteIndex, tempData, 0, byteCount);
-                            newPatch.data = ByteArrayToString(tempData);
+                            newPatch.data = PatchDataFormatter.ByteArrayToHexText(tempData);
                             byteIndex = byteEditIndex - 1;
                             break;
                         }
@@ -47,11 +47,6 @@ namespace Aem_TBL_Patcher
                     patches.Add(newPatch);
                 }
             }
-        }
-
-        public static string ByteArrayToString(byte[] ba)
-        {
-            return BitConverter.ToString(ba).Replace("-", " ");
         }
     }
 }

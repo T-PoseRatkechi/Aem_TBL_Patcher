@@ -80,26 +80,11 @@ namespace Aem_TBL_Patcher.Patchers.P5
                             comment = $"Segment: {i}, Index: {j}",
                             section = i,
                             index = j,
-                            name = ByteArrayToString(moddedNameSections[i][j]),
+                            name = PatchDataFormatter.ByteArrayToNameText(moddedNameSections[i][j]),
                         });
                     }
                 }
             }
-        }
-        public static string ByteArrayToString(byte[] ba)
-        {
-            string name = null;
-            for (int i = 0; i < ba.Length; i++)
-            {
-                if (ba[i] <= 0x7f)
-                    name += Encoding.ASCII.GetString(new byte[] { ba[i] });
-                else if (i != ba.Length - 1)
-                {
-                    name += $"[{BitConverter.ToString(ba[i..(i + 2)]).Replace("-", " ")}]";
-                    i++;
-                }
-            }
-            return name;
         }
     }
 

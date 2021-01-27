@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Aem_TBL_Patcher.Segments;
 
 namespace Aem_TBL_Patcher
@@ -41,7 +40,7 @@ namespace Aem_TBL_Patcher
                             tbl = _segmentProps.Tbl,
                             section = _segmentProps.Index,
                             offset = (currentEntry * _segmentProps.EntrySize),
-                            data = ByteArrayToString(moddedElement),
+                            data = PatchDataFormatter.ByteArrayToHexText(moddedElement),
                         });
 
                         //Console.WriteLine($"Entry Patch\nTBL: {_segmentProps.Tbl}\nSegmentIndex: {_segmentProps.Index}\nOffset: {currentEntry * _segmentProps.EntrySize}\n");
@@ -59,7 +58,7 @@ namespace Aem_TBL_Patcher
                         tbl = _segmentProps.Tbl,
                         section = _segmentProps.Index,
                         offset = (currentEntry * _segmentProps.EntrySize),
-                        data = ByteArrayToString(moddedElement),
+                        data = PatchDataFormatter.ByteArrayToHexText(moddedElement),
                     });
 
                     //Console.WriteLine($"Entry Patch (Extended)\nTBL: {_segmentProps.Tbl}\nSegmentIndex: {_segmentProps.Index}\nOffset: {currentEntry * _segmentProps.EntrySize}\n");
@@ -71,11 +70,6 @@ namespace Aem_TBL_Patcher
             //Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"[{_segmentProps.Name}] Entries: {mod_numEntries}, Total Patches: {patchesCount + patchesCountExtra}, Extended Patches: {patchesCountExtra}");
             //Console.ResetColor();
-        }
-
-        public static string ByteArrayToString(byte[] ba)
-        {
-            return BitConverter.ToString(ba).Replace("-", " ");
         }
     }
 }
