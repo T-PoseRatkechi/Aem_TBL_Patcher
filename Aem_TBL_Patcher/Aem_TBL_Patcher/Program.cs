@@ -160,8 +160,15 @@ namespace Aem_TBL_Patcher
                 // generate patches for each modded tbl file
                 foreach (string modTbl in modTblFiles)
                 {
-                    List<PatchEdit> gameTblPatches = new List<PatchEdit>();
-                    List<PatchEdit> gameNameTblPatches = new List<PatchEdit>();
+                    // prep patch json
+                    Patch currentPatch = new Patch
+                    {
+                        Version = 1,
+                        Patches = null,
+                        NamePatches = null
+                    };
+
+                    //List<PatchEdit> gameTblPatches = new List<PatchEdit>();
 
                     string tblFile = Path.GetFileName(modTbl);
                     string originalTbl = $@"{game.OriginalFolder}\{tblFile}";
@@ -175,13 +182,10 @@ namespace Aem_TBL_Patcher
                         continue;
                     }
 
-                    if (Path.GetFileNameWithoutExtension(originalTbl).ToUpper() == "NAME")
-                        LoadTblPatches(game.GamePatchers, gameNameTblPatches, originalTbl, modTbl);
-                    else
-                        LoadTblPatches(game.GamePatchers, gameTblPatches, originalTbl, modTbl);
+                    LoadTblPatches(game.GamePatchers, ref currentPatch, originalTbl, modTbl);
 
-                    // skip tbl patches if not patches generated
-                    if (gameTblPatches.Count < 1 && gameNameTblPatches.Count < 1)
+                    // skip tbl patches if no patches generated
+                    if (currentPatch.Patches == null && currentPatch.NamePatches == null)
                         continue;
 
                     // output patch file for current game
@@ -189,15 +193,7 @@ namespace Aem_TBL_Patcher
                     {
                         string outputPatchFile = $@"{game.PatchesFolder}\{Path.GetFileNameWithoutExtension(originalTbl)}_Patches.tbp";
 
-                        // prep patch json
-                        Patch gamePatch = new Patch
-                        {
-                            Version = 1,
-                            Patches = gameTblPatches.Count == 0 ? null : gameTblPatches.ToArray(),
-                            NamePatches = gameNameTblPatches.Count == 0 ? null : gameNameTblPatches.ToArray()
-                        };
-
-                        File.WriteAllText(outputPatchFile, JsonSerializer.Serialize(gamePatch, new JsonSerializerOptions { WriteIndented = true, IgnoreNullValues = true }));
+                        File.WriteAllText(outputPatchFile, JsonSerializer.Serialize(currentPatch, new JsonSerializerOptions { WriteIndented = true, IgnoreNullValues = true }));
 
                         Console.ForegroundColor = ConsoleColor.Green;
                         //Console.WriteLine($"[{game.Name}] Total Patches: {gameTblPatches.Count}");
@@ -214,7 +210,7 @@ namespace Aem_TBL_Patcher
             }
         }
 
-        private static void LoadTblPatches(BasePatcher[] gamePatchers, List<PatchEdit> allPatches, string originalTblPath, string moddedTblPath)
+        private static void LoadTblPatches(BasePatcher[] gamePatchers, ref Patch thePatch, string originalTblPath, string moddedTblPath)
         {
             try
             {
@@ -236,7 +232,11 @@ namespace Aem_TBL_Patcher
                 byte[] originalBytes = File.ReadAllBytes(originalTblPath);
                 byte[] moddedBytes = File.ReadAllBytes(moddedTblPath);
 
-                allPatches.AddRange(tblPatcher.GetPatches(originalBytes, moddedBytes));
+                // add tbl patches to correct patch array; NAME.tbl is a pain...
+                if (tblName.Equals("NAME"))
+                    thePatch.NamePatches = tblPatcher.GetPatches(originalBytes, moddedBytes).ToArray();
+                else
+                    thePatch.Patches = tblPatcher.GetPatches(originalBytes, moddedBytes).ToArray();
             }
             catch (NotImplementedException)
             {
