@@ -8,6 +8,6 @@ namespace Aem_TBL_Patcher.Patchers.P5
     {
         public TalkInfoPatcher() : base("TALKINFO", true) { }
 
-        protected override IPatchGenerator[] Patchers => new IPatchGenerator[] { new BytePatches(0, _moddedBytes.Length) };
+        protected override IPatchGenerator[] Patchers => new IPatchGenerator[] { new BytePatches(_tblName, 0, _moddedBytes.Length) };
     }
 }

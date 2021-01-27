@@ -88,6 +88,7 @@ namespace Aem_TBL_Patcher.Patchers.P5
                         patches.Add(new PatchEdit
                         {
                             comment = $"Segment: {i}, Index: {j}",
+                            tbl = "NAME",
                             section = i,
                             index = j,
                             name = PatchDataFormatter.ByteArrayToNameText(moddedNameSections[i][j]),
