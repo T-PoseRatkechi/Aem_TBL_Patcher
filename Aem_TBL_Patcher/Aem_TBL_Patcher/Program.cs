@@ -12,6 +12,7 @@ namespace Aem_TBL_Patcher
     {
         public int Version { get; set; }
         public PatchEdit[] Patches { get; set; }
+        public PatchEdit[] NamePatches { get; set; }
     }
 
     public struct PatchEdit
@@ -19,8 +20,10 @@ namespace Aem_TBL_Patcher
         public string comment { get; set; }
         public string tbl { get; set; }
         public int section { get; set; }
-        public long offset { get; set; }
+        public int? offset { get; set; }
         public string data { get; set; }
+        public int? index { get; set; }
+        public string name { get; set; }
     }
 
     class Program
@@ -76,7 +79,9 @@ namespace Aem_TBL_Patcher
                 new Patchers.P5.PlayerPatcher(),
                 new Patchers.P5.SkillPatcher(),
                 new Patchers.P5.UnitPatcher(),
-                new Patchers.P5.VisualPatcher()
+                new Patchers.P5.VisualPatcher(),
+                new Patchers.P5.NamePatcher(),
+                new Patchers.P5.TalkInfoPatcher()
             }),
             new GameProps(GameTitle.P3F, new BasePatcher[]
             {
@@ -156,6 +161,7 @@ namespace Aem_TBL_Patcher
                 foreach (string modTbl in modTblFiles)
                 {
                     List<PatchEdit> gameTblPatches = new List<PatchEdit>();
+                    List<PatchEdit> gameNameTblPatches = new List<PatchEdit>();
 
                     string tblFile = Path.GetFileName(modTbl);
                     string originalTbl = $@"{game.OriginalFolder}\{tblFile}";
@@ -169,10 +175,13 @@ namespace Aem_TBL_Patcher
                         continue;
                     }
 
-                    LoadTblPatches(game.GamePatchers, gameTblPatches, originalTbl, modTbl);
+                    if (Path.GetFileNameWithoutExtension(originalTbl).ToUpper() == "NAME")
+                        LoadTblPatches(game.GamePatchers, gameNameTblPatches, originalTbl, modTbl);
+                    else
+                        LoadTblPatches(game.GamePatchers, gameTblPatches, originalTbl, modTbl);
 
                     // skip tbl patches if not patches generated
-                    if (gameTblPatches.Count < 1)
+                    if (gameTblPatches.Count < 1 && gameNameTblPatches.Count < 1)
                         continue;
 
                     // output patch file for current game
@@ -184,10 +193,11 @@ namespace Aem_TBL_Patcher
                         Patch gamePatch = new Patch
                         {
                             Version = 1,
-                            Patches = gameTblPatches.ToArray()
+                            Patches = gameTblPatches.Count == 0 ? null : gameTblPatches.ToArray(),
+                            NamePatches = gameNameTblPatches.Count == 0 ? null : gameNameTblPatches.ToArray()
                         };
 
-                        File.WriteAllText(outputPatchFile, JsonSerializer.Serialize(gamePatch, new JsonSerializerOptions { WriteIndented = true }));
+                        File.WriteAllText(outputPatchFile, JsonSerializer.Serialize(gamePatch, new JsonSerializerOptions { WriteIndented = true, IgnoreNullValues = true }));
 
                         Console.ForegroundColor = ConsoleColor.Green;
                         //Console.WriteLine($"[{game.Name}] Total Patches: {gameTblPatches.Count}");
