@@ -93,7 +93,7 @@ namespace Aem_TBL_Patcher.Patchers.P5
             {
                 if (ba[i] <= 0x7f)
                     name += Encoding.ASCII.GetString(new byte[] { ba[i] });
-                else
+                else if (i != ba.Length - 1)
                 {
                     name += $"[{BitConverter.ToString(ba[i..(i + 2)]).Replace("-", " ")}]";
                     i++;
