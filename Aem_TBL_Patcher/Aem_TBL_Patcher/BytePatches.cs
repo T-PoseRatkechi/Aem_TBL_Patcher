@@ -36,9 +36,9 @@ namespace Aem_TBL_Patcher
                         // exit loop once bytes match again
                         if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
                         {
-                            //newPatch.data = new byte[byteCount];
                             byte[] tempData = new byte[byteCount];
                             Array.Copy(moddedBytes, byteIndex, tempData, 0, byteCount);
+                            newPatch.data = ByteArrayToString(tempData);
                             byteIndex = byteEditIndex - 1;
                             break;
                         }
@@ -47,6 +47,11 @@ namespace Aem_TBL_Patcher
                     patches.Add(newPatch);
                 }
             }
+        }
+
+        public static string ByteArrayToString(byte[] ba)
+        {
+            return BitConverter.ToString(ba).Replace("-", " ");
         }
     }
 }
