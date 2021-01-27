@@ -17,7 +17,7 @@ namespace Aem_TBL_Patcher
 
         public void GeneratePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
         {
-            for (long byteIndex = start, totalBytes = end; byteIndex < totalBytes; byteIndex++)
+            for (int byteIndex = start, totalBytes = end; byteIndex < totalBytes; byteIndex++)
             {
                 byte currentOriginalByte = originalBytes[byteIndex];
                 byte currentModdedByte = moddedBytes[byteIndex];
@@ -31,7 +31,7 @@ namespace Aem_TBL_Patcher
                     };
 
                     // read ahead for the edited bytes
-                    for (long byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < totalBytes; byteEditIndex++, byteCount++)
+                    for (int byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < totalBytes; byteEditIndex++, byteCount++)
                     {
                         // exit loop once bytes match again
                         if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])

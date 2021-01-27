@@ -19,7 +19,7 @@ namespace Aem_TBL_Patcher
         public string comment { get; set; }
         public string tbl { get; set; }
         public int section { get; set; }
-        public long offset { get; set; }
+        public int offset { get; set; }
         public string data { get; set; }
     }
 
