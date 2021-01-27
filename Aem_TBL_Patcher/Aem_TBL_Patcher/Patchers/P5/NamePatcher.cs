@@ -9,9 +9,10 @@ namespace Aem_TBL_Patcher.Patchers.P5
     {
         List<List<byte[]>> GetNameSections(byte[] tblBytes)
         {
+            List<byte[]> section;
             List<List<byte[]>> sections = new List<List<byte[]>>();
             int pos = 0;
-            List<byte[]> section;
+
             // 17 sections
             for (int i = 0; i <= 16; i++)
             {
@@ -36,6 +37,7 @@ namespace Aem_TBL_Patcher.Patchers.P5
                 // Get names
                 byte[] segment = tblBytes[(pos + 4)..(pos + 4 + namesSize)];
                 List<byte> name = new List<byte>();
+
                 foreach (var segmentByte in segment)
                 {
                     if (segmentByte == (byte)0)
@@ -47,27 +49,35 @@ namespace Aem_TBL_Patcher.Patchers.P5
                     {
                         name.Add(segmentByte);
                     }
-
                 }
 
                 // Get to next section
                 pos += namesSize + 4;
+
                 if ((pos % 16) != 0)
                 {
                     pos += 16 - (pos % 16);
                 }
+
                 sections.Add(section);
             }
             return sections;
         }
+
         public void GeneratePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
         {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("NAME");
+            Console.ResetColor();
+
             List<List<byte[]>> originalNameSections = GetNameSections(originalBytes);
             List<List<byte[]>> moddedNameSections = GetNameSections(moddedBytes);
+
             if (originalNameSections.Count != 17 && moddedNameSections.Count != 17)
             {
-                Console.WriteLine("Incorrect number of sections for NAME.TBL");
+                Console.WriteLine("Incorrect number of sections for NAME.TBL!");
             }
+
             for (int i = 0; i <= 16; i++)
             {
                 int numNames = Math.Max(originalNameSections[i].Count, moddedNameSections[i].Count);
