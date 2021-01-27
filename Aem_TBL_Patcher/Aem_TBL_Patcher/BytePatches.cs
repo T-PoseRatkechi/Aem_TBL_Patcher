@@ -6,11 +6,13 @@ namespace Aem_TBL_Patcher
 {
     class BytePatches : IPatchGenerator
     {
+        string tbl = null;
         int start = 0;
         int end = 0;
 
-        public BytePatches(int startByte, int endByte)
+        public BytePatches(string tblName, int startByte, int endByte)
         {
+            tbl = tblName;
             start = startByte;
             end = endByte;
         }
@@ -27,6 +29,7 @@ namespace Aem_TBL_Patcher
                 {
                     PatchEdit newPatch = new PatchEdit
                     {
+                        tbl = tbl,
                         offset = byteIndex
                     };
 

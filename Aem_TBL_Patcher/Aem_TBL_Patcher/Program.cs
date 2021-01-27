@@ -12,7 +12,6 @@ namespace Aem_TBL_Patcher
     {
         public int Version { get; set; }
         public PatchEdit[] Patches { get; set; }
-        public PatchEdit[] NamePatches { get; set; }
     }
 
     public struct PatchEdit
@@ -165,7 +164,6 @@ namespace Aem_TBL_Patcher
                     {
                         Version = 1,
                         Patches = null,
-                        NamePatches = null
                     };
 
                     //List<PatchEdit> gameTblPatches = new List<PatchEdit>();
@@ -185,7 +183,7 @@ namespace Aem_TBL_Patcher
                     LoadTblPatches(game.GamePatchers, ref currentPatch, originalTbl, modTbl);
 
                     // skip tbl patches if no patches generated
-                    if (currentPatch.Patches == null && currentPatch.NamePatches == null)
+                    if (currentPatch.Patches == null)
                         continue;
 
                     // output patch file for current game
@@ -233,10 +231,7 @@ namespace Aem_TBL_Patcher
                 byte[] moddedBytes = File.ReadAllBytes(moddedTblPath);
 
                 // add tbl patches to correct patch array; NAME.tbl is a pain...
-                if (tblName.Equals("NAME"))
-                    thePatch.NamePatches = tblPatcher.GetPatches(originalBytes, moddedBytes).ToArray();
-                else
-                    thePatch.Patches = tblPatcher.GetPatches(originalBytes, moddedBytes).ToArray();
+                thePatch.Patches = tblPatcher.GetPatches(originalBytes, moddedBytes).ToArray();
             }
             catch (NotImplementedException)
             {
