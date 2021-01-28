@@ -8,6 +8,6 @@ namespace Aem_TBL_Patcher.Patchers.P4G
     {
         public AicalcPatcher() : base("AICALC", false) { }
 
-        protected override IPatchGenerator[] Patchers => new IPatchGenerator[] { new BytePatches(_tblName, 0, _moddedBytes.Length) };
+        protected override IPatchGenerator[] Patchers => new IPatchGenerator[] { new BytePatches(_tblName, 0, _originalBytes.Length) };
     }
 }
