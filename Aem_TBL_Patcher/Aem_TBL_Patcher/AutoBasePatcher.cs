@@ -5,9 +5,6 @@ namespace Aem_TBL_Patcher
 {
     abstract class AutoBasePatcher : BasePatcher
     {
-        //readonly private bool _isBigEndian = false;
-        //readonly private string _tblName = String.Empty;
-
         public AutoBasePatcher(string tblName, bool isBigEndian) : base(tblName, isBigEndian) { }
 
         private IPatchGenerator[] GeneratePatchers()
@@ -87,11 +84,6 @@ namespace Aem_TBL_Patcher
             }
 
             return patchers;
-        }
-
-        public static string ByteArrayToString(byte[] ba)
-        {
-            return BitConverter.ToString(ba).Replace("-", " ");
         }
 
         protected override IPatchGenerator[] Patchers => GeneratePatchers();
