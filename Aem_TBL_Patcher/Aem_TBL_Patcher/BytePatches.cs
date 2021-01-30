@@ -17,10 +17,10 @@ namespace Aem_TBL_Patcher
         public void GeneratePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
         {
             string tbl = _segmentProps.Tbl;
-            int start = _segmentProps.OriginalOffset;
-            int end = (int)_segmentProps.OriginalSize + start;
+            int patchBytesStart = _segmentProps.OriginalOffset;
+            int patchBytesEnd = (int)_segmentProps.OriginalSize + patchBytesStart;
 
-            for (int byteIndex = start, totalBytes = end; byteIndex < totalBytes; byteIndex++)
+            for (int byteIndex = patchBytesStart; byteIndex < patchBytesEnd; byteIndex++)
             {
                 byte currentOriginalByte = originalBytes[byteIndex];
                 byte currentModdedByte = moddedBytes[byteIndex];
@@ -36,25 +36,26 @@ namespace Aem_TBL_Patcher
                     };
 
                     // read ahead for the edited bytes
-                    for (int byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < totalBytes; byteEditIndex++, byteCount++)
+                    for (int byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < patchBytesEnd; byteEditIndex++, byteCount++)
                     {
-                        // exit loop once bytes match again
-                        if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
+                        // handle creating patches that reach up to the length of the original tbl
+                        if (byteEditIndex == originalBytes.Length - 1)
+                        {
+                            byte[] tempData = new byte[byteCount + 1];
+                            Array.Copy(moddedBytes, byteIndex, tempData, 0, byteCount + 1);
+                            newPatch.data = PatchDataFormatter.ByteArrayToHexText(tempData);
+                            byteIndex = byteEditIndex;
+                            break;
+                        }
+                        // handle creating patches within the range of the original tbl
+                        else if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
                         {
                             byte[] tempData = new byte[byteCount];
                             Array.Copy(moddedBytes, byteIndex, tempData, 0, byteCount);
                             newPatch.data = PatchDataFormatter.ByteArrayToHexText(tempData);
-                            byteIndex = byteEditIndex - 1;
+                            byteIndex = byteEditIndex;
                             break;
                         }
-                    }
-
-                    if (newPatch.data == null)
-                    {
-                        byte[] tempData = new byte[totalBytes - byteIndex];
-                        Array.Copy(moddedBytes, byteIndex, tempData, 0, totalBytes - byteIndex);
-                        newPatch.data = PatchDataFormatter.ByteArrayToHexText(tempData);
-                        byteIndex = totalBytes;
                     }
                     
                     patches.Add(newPatch);
