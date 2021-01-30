@@ -11,7 +11,7 @@ namespace Aem_TBL_Patcher.Patchers.P4G
 
         protected override Segment[] Segments => new Segment[]
         {
-            new Segment(0, "EffectUnknown")
+            new Segment("EffectUnknown")
         };
     }
 }

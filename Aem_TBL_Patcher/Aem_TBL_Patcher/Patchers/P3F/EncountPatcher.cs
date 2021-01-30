@@ -12,10 +12,10 @@ namespace Aem_TBL_Patcher.Patchers.P3F
         protected override Segment[] Segments => new Segment[]
         {
             new Segment(28, "Encounter"),
-            new Segment(0, "EncounterUnknown1"),
-            new Segment(0, "EncounterUnknown2"),
-            new Segment(0, "EncounterUnknown3"),
-            new Segment(0, "EncounterUnknown4")
+            new Segment("EncounterUnknown1"),
+            new Segment("EncounterUnknown2"),
+            new Segment("EncounterUnknown3"),
+            new Segment("EncounterUnknown4")
         };
     }
 }

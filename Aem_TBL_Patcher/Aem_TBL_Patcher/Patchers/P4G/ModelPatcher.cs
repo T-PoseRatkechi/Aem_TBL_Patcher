@@ -11,8 +11,8 @@ namespace Aem_TBL_Patcher.Patchers.P4G
 
         protected override Segment[] Segments => new Segment[]
         {
-            new Segment(0, "ModelUnknown1"),
-            new Segment(0, "ModelUnknown2")
+            new Segment("ModelUnknown1"),
+            new Segment("ModelUnknown2")
         };
     }
 }
