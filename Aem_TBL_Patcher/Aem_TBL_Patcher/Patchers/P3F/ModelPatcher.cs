@@ -9,7 +9,11 @@ namespace Aem_TBL_Patcher.Patchers.P3F
     {
         public ModelPatcher() : base("MODEL", false) { }
 
-        // TODO
-        protected override Segment[] Segments => throw new NotImplementedException();
+        protected override Segment[] Segments => new Segment[]
+        {
+            new Segment(0, "ModelUnknown1"),
+            new Segment(0, "ModelUnknown2"),
+            new Segment(0, "ModelUnknown3"),
+        };
     }
 }

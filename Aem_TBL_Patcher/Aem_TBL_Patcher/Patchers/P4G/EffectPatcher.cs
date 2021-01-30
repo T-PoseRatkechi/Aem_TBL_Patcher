@@ -1,13 +1,17 @@
-﻿using System;
+﻿using Aem_TBL_Patcher.Segments;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Aem_TBL_Patcher.Patchers.P4G
 {
-    class EffectPatcher : BasePatcher
+    class EffectPatcher : AutoBasePatcher
     {
         public EffectPatcher() : base("EFFECT", false) { }
 
-        protected override IPatchGenerator[] Patchers => new IPatchGenerator[] { new BytePatches(_tblName, 0, _originalBytes.Length) };
+        protected override Segment[] Segments => new Segment[]
+        {
+            new Segment(0, "EffectUnknown")
+        };
     }
 }

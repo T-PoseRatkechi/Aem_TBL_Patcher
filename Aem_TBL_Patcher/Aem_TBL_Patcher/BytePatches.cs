@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Aem_TBL_Patcher.Segments;
 
 namespace Aem_TBL_Patcher
 {
     class BytePatches : IPatchGenerator
     {
-        string tbl = null;
-        int start = 0;
-        int end = 0;
+        readonly SegmentProps _segmentProps;
 
-        public BytePatches(string tblName, int startByte, int endByte)
+        public BytePatches(SegmentProps segmentProps)
         {
-            tbl = tblName;
-            start = startByte;
-            end = endByte;
+            _segmentProps = segmentProps;
         }
 
         public void GeneratePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
         {
+            string tbl = _segmentProps.Tbl;
+            int start = _segmentProps.OriginalOffset;
+            int end = (int)_segmentProps.OriginalSize + start;
+
             for (int byteIndex = start, totalBytes = end; byteIndex < totalBytes; byteIndex++)
             {
                 byte currentOriginalByte = originalBytes[byteIndex];
@@ -30,29 +31,24 @@ namespace Aem_TBL_Patcher
                     PatchEdit newPatch = new PatchEdit
                     {
                         tbl = tbl,
-                        offset = byteIndex
+                        section = _segmentProps.Index,
+                        offset = byteIndex - 4
                     };
 
                     // read ahead for the edited bytes
                     for (int byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < totalBytes; byteEditIndex++, byteCount++)
                     {
                         // exit loop once bytes match again
-                        if (byteEditIndex == totalBytes - 1 || originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
+                        if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
                         {
-                            if (byteEditIndex == totalBytes - 1)
-                                byteCount += 1;
                             byte[] tempData = new byte[byteCount];
                             Array.Copy(moddedBytes, byteIndex, tempData, 0, byteCount);
                             newPatch.data = PatchDataFormatter.ByteArrayToHexText(tempData);
-                            if (byteEditIndex == totalBytes - 1)
-                                byteIndex = totalBytes;
-                            else
-                                byteIndex = byteEditIndex - 1;
+                            byteIndex = byteEditIndex - 1;
                             break;
                         }
                     }
 
-                    /* cooler null implementation
                     if (newPatch.data == null)
                     {
                         byte[] tempData = new byte[totalBytes - byteIndex];
@@ -60,18 +56,22 @@ namespace Aem_TBL_Patcher
                         newPatch.data = PatchDataFormatter.ByteArrayToHexText(tempData);
                         byteIndex = totalBytes;
                     }
-                    */
+                    
                     patches.Add(newPatch);
                 }
             }
             // add rest of expanded bytes as patch
-            if (moddedBytes.Length > originalBytes.Length)
+            if (_segmentProps.ModSize > _segmentProps.OriginalSize)
             {
+                int expandedSize = (int)(_segmentProps.ModSize - _segmentProps.OriginalSize);
+                byte[] tempData = new byte[expandedSize];
+                Array.Copy(moddedBytes, (int)(_segmentProps.OriginalSize + _segmentProps.ModOffset), tempData, 0, expandedSize);
                 PatchEdit newPatch = new PatchEdit
                 {
                     tbl = tbl,
-                    offset = originalBytes.Length,
-                    data = PatchDataFormatter.ByteArrayToHexText(moddedBytes[originalBytes.Length..moddedBytes.Length])
+                    section = _segmentProps.Index,
+                    offset = (int)_segmentProps.OriginalSize,
+                    data = PatchDataFormatter.ByteArrayToHexText(tempData)
                 };
                 patches.Add(newPatch);
             }
