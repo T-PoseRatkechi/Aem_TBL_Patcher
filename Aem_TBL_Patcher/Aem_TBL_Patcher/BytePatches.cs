@@ -38,26 +38,25 @@ namespace Aem_TBL_Patcher
                     // read ahead for the edited bytes
                     for (int byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < patchBytesEnd; byteEditIndex++, byteCount++)
                     {
-                        // handle creating patches that reach up to the length of the original tbl
-                        if (byteEditIndex == originalBytes.Length - 1)
-                        {
-                            byte[] tempData = new byte[byteCount + 1];
-                            Array.Copy(moddedBytes, byteIndex, tempData, 0, byteCount + 1);
-                            newPatch.data = PatchDataFormatter.ByteArrayToHexText(tempData);
-                            byteIndex = byteEditIndex;
-                            break;
-                        }
-                        // handle creating patches within the range of the original tbl
-                        else if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
+                        // exit loop once bytes match again
+                        if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
                         {
                             byte[] tempData = new byte[byteCount];
                             Array.Copy(moddedBytes, byteIndex, tempData, 0, byteCount);
                             newPatch.data = PatchDataFormatter.ByteArrayToHexText(tempData);
-                            byteIndex = byteEditIndex;
+                            byteIndex = byteEditIndex - 1;
                             break;
                         }
                     }
-                    
+
+                    if (newPatch.data == null)
+                    {
+                        byte[] tempData = new byte[patchBytesEnd - byteIndex];
+                        Array.Copy(moddedBytes, byteIndex, tempData, 0, patchBytesEnd - byteIndex);
+                        newPatch.data = PatchDataFormatter.ByteArrayToHexText(tempData);
+                        byteIndex = patchBytesEnd;
+                    }
+
                     patches.Add(newPatch);
                 }
             }
