@@ -16,51 +16,53 @@ namespace Aem_TBL_Patcher
 
         public void GeneratePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
         {
-            string tbl = _segmentProps.Tbl;
-            int patchBytesStart = _segmentProps.OriginalOffset;
-            int patchBytesEnd = (int)_segmentProps.OriginalSize + patchBytesStart;
+            //int patchBytesStart = _segmentProps.OriginalOffset;
+            //int patchBytesEnd = (int)_segmentProps.OriginalSize + patchBytesStart;
 
             // track patch info
             int totalBytesEdited = 0;
             int patchesCount = 0;
             int extraPatchesCount = 0;
 
-            for (int byteIndex = patchBytesStart; byteIndex < patchBytesEnd; byteIndex++)
+            for (int byteIndex = 0, totalSegmentBytes = (int) _segmentProps.OriginalSize; byteIndex < totalSegmentBytes; byteIndex++)
             {
-                byte currentOriginalByte = originalBytes[byteIndex];
-                byte currentModdedByte = moddedBytes[byteIndex];
+                int original_byteIndex = _segmentProps.OriginalOffset + byteIndex;
+                byte currentOriginalByte = originalBytes[original_byteIndex];
+
+                int modded_byteIndex = _segmentProps.ModOffset + byteIndex;
+                byte currentModdedByte = moddedBytes[modded_byteIndex];
 
                 // mismatched bytes indicating edited bytes
                 if (currentOriginalByte != currentModdedByte)
                 {
                     PatchEdit newPatch = new PatchEdit
                     {
-                        tbl = tbl,
+                        tbl = _segmentProps.Tbl,
                         section = _segmentProps.Index,
-                        offset = byteIndex - 4
+                        offset = byteIndex
                     };
 
                     // read ahead for the edited bytes
-                    for (int byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < patchBytesEnd; byteEditIndex++, byteCount++)
+                    for (int byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < totalSegmentBytes; byteEditIndex++, byteCount++)
                     {
                         // handle creating patches that reach up to the length of the original tbl
-                        if (byteEditIndex == originalBytes.Length - 1)
+                        if (byteEditIndex >= _segmentProps.OriginalSize - 1)
                         {
                             totalBytesEdited += byteCount + 1;
 
                             byte[] tempData = new byte[byteCount + 1];
-                            Array.Copy(moddedBytes, byteIndex, tempData, 0, byteCount + 1);
+                            Array.Copy(moddedBytes, modded_byteIndex, tempData, 0, byteCount + 1);
                             newPatch.data = PatchDataFormatter.ByteArrayToHexText(tempData);
                             byteIndex = byteEditIndex;
                             break;
                         }
                         // handle creating patches within the range of the original tbl
-                        else if (originalBytes[byteEditIndex] == moddedBytes[byteEditIndex])
+                        else if (originalBytes[_segmentProps.OriginalOffset + byteEditIndex] == moddedBytes[_segmentProps.ModOffset + byteEditIndex])
                         {
                             totalBytesEdited += byteCount;
 
                             byte[] tempData = new byte[byteCount];
-                            Array.Copy(moddedBytes, byteIndex, tempData, 0, byteCount);
+                            Array.Copy(moddedBytes, modded_byteIndex, tempData, 0, byteCount);
                             newPatch.data = PatchDataFormatter.ByteArrayToHexText(tempData);
                             byteIndex = byteEditIndex;
                             break;
@@ -81,7 +83,7 @@ namespace Aem_TBL_Patcher
 
                 PatchEdit newPatch = new PatchEdit
                 {
-                    tbl = tbl,
+                    tbl = _segmentProps.Tbl,
                     section = _segmentProps.Index,
                     offset = (int)_segmentProps.OriginalSize,
                     data = PatchDataFormatter.ByteArrayToHexText(tempData)
