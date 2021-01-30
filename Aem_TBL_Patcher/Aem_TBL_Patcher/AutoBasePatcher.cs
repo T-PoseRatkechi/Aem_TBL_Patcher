@@ -42,16 +42,34 @@ namespace Aem_TBL_Patcher
                 //Console.WriteLine($"Segment: {currentSegment.SegmentName}\nSegmentSize (Original): {original_segmentSize}\nSegmentSize (Modded): {mod_segmentSize}\nSectionOffset (Original): {original_currentOffset}\nSectionOffset (Modded): {mod_currentOffset}");
 
                 //Console.WriteLine($"EntryPatch - Original Offset: {original_currentOffset}, Mod Offset: {mod_currentOffset}, Entry Size: {currentSegment.EntrySize}\n");
-                patchers[segmentIndex] = new EntryPatches(new SegmentProps { 
-                    Tbl = _tblName,
-                    Index = segmentIndex,
-                    Name = currentSegment.SegmentName,
-                    EntrySize = currentSegment.EntrySize,
-                    OriginalOffset = original_currentOffset,
-                    ModOffset = mod_currentOffset,
-                    OriginalSize = original_segmentSize,
-                    ModSize = mod_segmentSize,
-                });
+                if (currentSegment.EntrySize == 0)
+                {
+                    patchers[segmentIndex] = new BytePatches(new SegmentProps
+                    {
+                        Tbl = _tblName,
+                        Index = segmentIndex,
+                        Name = currentSegment.SegmentName,
+                        EntrySize = currentSegment.EntrySize,
+                        OriginalOffset = original_currentOffset,
+                        ModOffset = mod_currentOffset,
+                        OriginalSize = original_segmentSize,
+                        ModSize = mod_segmentSize,
+                    });
+                }
+                else
+                {
+                    patchers[segmentIndex] = new EntryPatches(new SegmentProps
+                    {
+                        Tbl = _tblName,
+                        Index = segmentIndex,
+                        Name = currentSegment.SegmentName,
+                        EntrySize = currentSegment.EntrySize,
+                        OriginalOffset = original_currentOffset,
+                        ModOffset = mod_currentOffset,
+                        OriginalSize = original_segmentSize,
+                        ModSize = mod_segmentSize,
+                    });
+                }
 
                 // update current offset
                 original_currentOffset = (int)(original_currentOffset + original_segmentSize);

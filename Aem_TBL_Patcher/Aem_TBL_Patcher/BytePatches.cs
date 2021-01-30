@@ -1,26 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Aem_TBL_Patcher.Segments;
 
 namespace Aem_TBL_Patcher
 {
     class BytePatches : IPatchGenerator
     {
-        string tbl = null;
-        int patchByteStart = 0;
-        int patchByteEnd = 0;
+        readonly SegmentProps _segmentProps;
 
-        public BytePatches(string tblName, int startByte, int endByte)
+        public BytePatches(SegmentProps segmentProps)
         {
-            tbl = tblName;
-            patchByteStart = startByte;
-            patchByteEnd = endByte;
+            _segmentProps = segmentProps;
         }
 
         public void GeneratePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
         {
-            // handle creating patches upto length of originaBytes array
-            for (int byteIndex = patchByteStart; byteIndex < patchByteEnd; byteIndex++)
+            string tbl = _segmentProps.Tbl;
+            int patchBytesStart = _segmentProps.OriginalOffset;
+            int patchBytesEnd = (int)_segmentProps.OriginalSize + patchBytesStart;
+
+            for (int byteIndex = patchBytesStart; byteIndex < patchBytesEnd; byteIndex++)
             {
                 byte currentOriginalByte = originalBytes[byteIndex];
                 byte currentModdedByte = moddedBytes[byteIndex];
@@ -31,11 +31,12 @@ namespace Aem_TBL_Patcher
                     PatchEdit newPatch = new PatchEdit
                     {
                         tbl = tbl,
-                        offset = byteIndex
+                        section = _segmentProps.Index,
+                        offset = byteIndex - 4
                     };
 
                     // read ahead for the edited bytes
-                    for (int byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < patchByteEnd; byteEditIndex++, byteCount++)
+                    for (int byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < patchBytesEnd; byteEditIndex++, byteCount++)
                     {
                         // handle creating patches that reach up to the length of the original tbl
                         if (byteEditIndex == originalBytes.Length - 1)
@@ -56,26 +57,23 @@ namespace Aem_TBL_Patcher
                             break;
                         }
                     }
-
+                    
                     patches.Add(newPatch);
                 }
             }
-
-            // handle creating patches past the original length of the tbl
-            // if the modded tbl extends past that and a patch was wanted for the entire tbl
-            if (patchByteEnd >= originalBytes.Length && originalBytes.Length < moddedBytes.Length)
+            // add rest of expanded bytes as patch
+            if (_segmentProps.ModSize > _segmentProps.OriginalSize)
             {
-                byte[] extendedBytes = moddedBytes[originalBytes.Length..moddedBytes.Length];
-
+                int expandedSize = (int)(_segmentProps.ModSize - _segmentProps.OriginalSize);
+                byte[] tempData = new byte[expandedSize];
+                Array.Copy(moddedBytes, (int)(_segmentProps.OriginalSize + _segmentProps.ModOffset), tempData, 0, expandedSize);
                 PatchEdit newPatch = new PatchEdit
                 {
                     tbl = tbl,
-                    offset = originalBytes.Length,
-                    data = PatchDataFormatter.ByteArrayToHexText(extendedBytes)
+                    section = _segmentProps.Index,
+                    offset = (int)_segmentProps.OriginalSize,
+                    data = PatchDataFormatter.ByteArrayToHexText(tempData)
                 };
-
-                Console.WriteLine("Extended Byte Patch");
-
                 patches.Add(newPatch);
             }
         }
