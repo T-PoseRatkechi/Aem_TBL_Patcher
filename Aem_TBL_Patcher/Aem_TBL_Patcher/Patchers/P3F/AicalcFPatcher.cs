@@ -11,24 +11,24 @@ namespace Aem_TBL_Patcher.Patchers.P3F
 
         protected override Segment[] Segments => new Segment[]
 {
-            new Segment(0, "AIUnknown1"),
-            new Segment(0, "AIUnknown2"),
-            new Segment(0, "AIUnknown3"),
-            new Segment(0, "AIUnknown4"),
-            new Segment(0, "AIUnknown5"),
-            new Segment(0, "AIUnknown6"),
-            new Segment(0, "AIUnknown7"),
-            new Segment(0, "AIUnknown8"),
-            new Segment(0, "AIUnknown9"),
-            new Segment(0, "AIUnknown10"),
-            new Segment(0, "AIUnknown11"),
-            new Segment(0, "AIUnknown12"),
-            new Segment(0, "AIUnknown13"),
-            new Segment(0, "AIUnknown14"),
-            new Segment(0, "AIUnknown15"),
-            new Segment(0, "AIUnknown16"),
-            new Segment(0, "PlayerAIFlowscript"),
-            new Segment(0, "EnemyAIFlowscript")
+            new Segment("AIUnknown1"),
+            new Segment("AIUnknown2"),
+            new Segment("AIUnknown3"),
+            new Segment("AIUnknown4"),
+            new Segment("AIUnknown5"),
+            new Segment("AIUnknown6"),
+            new Segment("AIUnknown7"),
+            new Segment("AIUnknown8"),
+            new Segment("AIUnknown9"),
+            new Segment("AIUnknown10"),
+            new Segment("AIUnknown11"),
+            new Segment("AIUnknown12"),
+            new Segment("AIUnknown13"),
+            new Segment("AIUnknown14"),
+            new Segment("AIUnknown15"),
+            new Segment("AIUnknown16"),
+            new Segment("PlayerAIFlowscript"),
+            new Segment("EnemyAIFlowscript")
         };
     }
 }

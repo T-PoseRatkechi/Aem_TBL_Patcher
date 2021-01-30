@@ -8,11 +8,20 @@ namespace Aem_TBL_Patcher.Segments
     {
         public int EntrySize { get; }
         public string SegmentName { get; }
+        public bool UseEntries { get; }
 
         public Segment(int s, string n)
         {
             EntrySize = s;
             SegmentName = n;
+            UseEntries = true;
+        }
+
+        public Segment(string n)
+        {
+            EntrySize = -1;
+            SegmentName = n;
+            UseEntries = false;
         }
     }
 

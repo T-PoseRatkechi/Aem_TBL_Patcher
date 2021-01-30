@@ -11,7 +11,7 @@ namespace Aem_TBL_Patcher.Patchers.P5
 
         protected override Segment[] Segments => new Segment[]
         {
-            new Segment(0, "TalkInfoUnknown")
+            new Segment("TalkInfoUnknown")
         };
     }
 }
