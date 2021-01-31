@@ -16,15 +16,12 @@ namespace Aem_TBL_Patcher
 
         public void GeneratePatches(List<PatchEdit> patches, byte[] originalBytes, byte[] moddedBytes)
         {
-            //int patchBytesStart = _segmentProps.OriginalOffset;
-            //int patchBytesEnd = (int)_segmentProps.OriginalSize + patchBytesStart;
-
             // track patch info
             int totalBytesEdited = 0;
             int patchesCount = 0;
             int extraPatchesCount = 0;
 
-            for (int byteIndex = 0, totalSegmentBytes = (int) _segmentProps.OriginalSize; byteIndex < totalSegmentBytes; byteIndex++)
+            for (int byteIndex = 0; byteIndex < _segmentProps.OriginalSize && byteIndex < _segmentProps.ModSize; byteIndex++)
             {
                 int original_byteIndex = _segmentProps.OriginalOffset + byteIndex;
                 byte currentOriginalByte = originalBytes[original_byteIndex];
@@ -43,7 +40,7 @@ namespace Aem_TBL_Patcher
                     };
 
                     // read ahead for the edited bytes
-                    for (int byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < totalSegmentBytes; byteEditIndex++, byteCount++)
+                    for (int byteEditIndex = byteIndex, byteCount = 0; byteEditIndex < _segmentProps.OriginalSize && byteEditIndex < _segmentProps.ModSize; byteEditIndex++, byteCount++)
                     {
                         // handle creating patches that reach up to the length of the original tbl
                         if (byteEditIndex >= _segmentProps.OriginalSize - 1)
@@ -90,6 +87,19 @@ namespace Aem_TBL_Patcher
                 };
 
                 extraPatchesCount++;
+                patches.Add(newPatch);
+            }
+            else if (_segmentProps.ModSize < _segmentProps.OriginalSize)
+            {
+                PatchEdit newPatch = new PatchEdit
+                {
+                    tbl = _segmentProps.Tbl,
+                    section = _segmentProps.Index,
+                    offset = (int) _segmentProps.ModSize,
+                    data = PatchDataFormatter.ByteArrayToHexText(new byte[_segmentProps.OriginalSize - _segmentProps.ModSize])
+                };
+
+                Console.WriteLine($"[{_segmentProps.Name}] Modded segment is smaller than original segment! Adding null bytes upto original length of segment!");
                 patches.Add(newPatch);
             }
 
