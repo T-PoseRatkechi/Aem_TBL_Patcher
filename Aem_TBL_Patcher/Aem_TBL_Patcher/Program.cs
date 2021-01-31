@@ -183,7 +183,7 @@ namespace Aem_TBL_Patcher
                     LoadTblPatches(game.GamePatchers, ref currentPatch, originalTbl, modTbl);
 
                     // skip tbl patches if no patches generated
-                    if (currentPatch.Patches == null)
+                    if (currentPatch.Patches.Length < 1)
                         continue;
 
                     // output patch file for current game
