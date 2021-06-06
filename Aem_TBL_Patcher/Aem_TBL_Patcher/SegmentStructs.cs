@@ -35,5 +35,6 @@ namespace Aem_TBL_Patcher.Segments
         public int ModOffset { get; set; }
         public uint OriginalSize { get; set; }
         public uint ModSize { get; set; }
+        public bool Itemtbl { get; set; }
     }
 }

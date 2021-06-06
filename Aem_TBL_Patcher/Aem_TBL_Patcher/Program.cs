@@ -65,7 +65,8 @@ namespace Aem_TBL_Patcher
                 new Patchers.P4G.MsgPatcher(),
                 new Patchers.P4G.PersonaPatcher(),
                 new Patchers.P4G.SkillPatcher(),
-                new Patchers.P4G.UnitPatcher()
+                new Patchers.P4G.UnitPatcher(),
+                new Patchers.P4G.ItemPatcher()
             }),
             new GameProps(GameTitle.P5, new BasePatcher[]
             {
@@ -183,7 +184,7 @@ namespace Aem_TBL_Patcher
                     LoadTblPatches(game.GamePatchers, ref currentPatch, originalTbl, modTbl);
 
                     // skip tbl patches if no patches generated
-                    if (currentPatch.Patches.Length < 1)
+                    if (currentPatch.Patches == null || currentPatch.Patches.Length < 1)
                         continue;
 
                     // output patch file for current game
@@ -249,7 +250,7 @@ namespace Aem_TBL_Patcher
         {
             try
             {
-                string[] tblFiles = Directory.GetFiles(folder, "*.tbl", SearchOption.TopDirectoryOnly);
+                string[] tblFiles = Directory.GetFiles(folder, "*", SearchOption.TopDirectoryOnly);
 
                 if (tblFiles.Length > 0)
                     return tblFiles;
