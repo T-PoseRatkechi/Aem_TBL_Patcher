@@ -5,11 +5,11 @@ using Aem_TBL_Patcher.Segments;
 
 namespace Aem_TBL_Patcher
 {
-    class EntryPatches : IPatchGenerator
+    class ItemtblEntryPatches : IPatchGenerator
     {
         readonly SegmentProps _segmentProps;
 
-        public EntryPatches(SegmentProps segmentProps)
+        public ItemtblEntryPatches(SegmentProps segmentProps)
         {
             _segmentProps = segmentProps;
         }
@@ -38,7 +38,7 @@ namespace Aem_TBL_Patcher
                             comment = $"Segment: {_segmentProps.Name}, Index: {currentEntry}",
                             tbl = _segmentProps.Tbl,
                             section = _segmentProps.Index,
-                            offset = (currentEntry * _segmentProps.EntrySize),
+                            offset = (currentEntry * _segmentProps.EntrySize + _segmentProps.OriginalOffset),
                             data = PatchDataFormatter.ByteArrayToHexText(moddedElement),
                         });
 
@@ -56,7 +56,7 @@ namespace Aem_TBL_Patcher
                         comment = $"Segment: {_segmentProps.Name} (Extended), Index: {currentEntry}",
                         tbl = _segmentProps.Tbl,
                         section = _segmentProps.Index,
-                        offset = (currentEntry * _segmentProps.EntrySize),
+                        offset = (currentEntry * _segmentProps.EntrySize + _segmentProps.OriginalOffset),
                         data = PatchDataFormatter.ByteArrayToHexText(moddedElement),
                     });
 
