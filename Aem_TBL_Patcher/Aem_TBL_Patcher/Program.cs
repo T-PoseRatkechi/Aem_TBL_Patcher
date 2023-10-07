@@ -31,7 +31,8 @@ namespace Aem_TBL_Patcher
         {
             P4G,
             P5,
-            P3F
+            P3F,
+            P3P
         }
 
         readonly private struct GameProps
@@ -97,6 +98,17 @@ namespace Aem_TBL_Patcher
                 new Patchers.P3F.SkillFPatcher(),
                 new Patchers.P3F.UnitPatcher(),
                 new Patchers.P3F.UnitFPatcher()
+            }),
+            new GameProps(GameTitle.P3P, new BasePatcher[]
+            {
+                new Patchers.P3P.AicalcPatcher(),
+                new Patchers.P3P.EffectPatcher(),
+                new Patchers.P3P.EncountPatcher(),
+                new Patchers.P3P.ModelPatcher(),
+                new Patchers.P3P.MsgPatcher(),
+                new Patchers.P3P.PersonaPatcher(),
+                new Patchers.P3P.SkillPatcher(),
+                new Patchers.P3P.UnitPatcher(),
             })
         };
 
